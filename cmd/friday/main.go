@@ -15,14 +15,14 @@ import (
 )
 
 const (
-	AppName    = "Friday.go"
-	AppVersion = "0.0.1"
+	appName    = "Friday.go"
+	appVersion = "0.0.1"
 )
 
 func init() {
 	cfg := config.LoadWithViper("config.yml", config.App{
-		Name:    AppName,
-		Version: AppVersion,
+		Name:    appName,
+		Version: appVersion,
 	})
 
 	infra.SetConfig(cfg)
@@ -35,11 +35,12 @@ func init() {
 	http.NewFiber(fiber.Config{
 		Prefork:       true,
 		CaseSensitive: true,
-		AppName:       AppName + " v" + AppVersion,
+		AppName:       appName + " v" + appVersion,
+		ErrorHandler:  http.NewErrorHandler(),
 	})
 }
 
-func AuthHandler() http.AddRouteFunc {
+func authHandler() http.AddRouteFunc {
 	userRepo := repo.NewUserRepository(infra.GetDB())
 	userCommand := app.NewAccountCommandService(userRepo)
 	userQuery := app.NewAccountQueryService(userRepo)
@@ -52,7 +53,7 @@ func main() {
 	l := infra.GetLogger()
 
 	http.Middleware(middleware.NewCommon, "/api")
-	http.Route("/api", AuthHandler())
+	http.Route("/api", authHandler())
 
 	if cfg.Server.Port <= 0 {
 		cfg.Server.Port = 8080

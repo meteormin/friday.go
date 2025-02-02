@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/meteormin/friday.go/internal/domain"
@@ -15,7 +14,13 @@ type AuthHandler struct {
 	query   domain.UserQuery
 }
 
-type LoginRequest struct {
+type SignInRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type SignupRequest struct {
+	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -27,23 +32,46 @@ type UserResource struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
+	var req SignupRequest
+	err := ctx.BodyParser(&req)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	user, err := auth.command.CreateUser(domain.CreateUser{
+		Name:     req.Name,
+		Username: req.Username,
+		Password: req.Password,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(UserResource{
+		Name:      user.Name,
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	})
+}
+
 func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
-	var req LoginRequest
+	var req SignInRequest
 	err := ctx.BodyParser(&req)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	exists, err := auth.query.FindUserByUsername(req.Username)
-	if errors.Is(err, domain.ErrNotFoundUser) {
-		return fiber.NewError(fiber.StatusNotFound, err.Error())
-	} else if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	if err != nil {
+		return err
 	}
 
 	err = exists.CheckPassword(req.Password)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		return err
 	}
 
 	exp := infra.GetConfig().Server.Jwt.Exp
@@ -69,7 +97,7 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 
 	user, err := auth.query.FindUserByUsername(username)
 	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, err.Error())
+		return err
 	}
 
 	return ctx.JSON(UserResource{

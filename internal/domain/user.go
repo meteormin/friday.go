@@ -1,15 +1,14 @@
 package domain
 
 import (
-	"errors"
 	"time"
 )
 
 var (
-	ErrNotFoundUser        = errors.New("user not found")
-	ErrInvalidUserName     = errors.New("invalid name")
-	ErrInvalidUserUsername = errors.New("invalid username")
-	ErrInvalidUserPassword = errors.New("invalid password")
+	ErrNotFoundUser        = NewError(404, "NotFoundUser", "user not found")
+	ErrInvalidUserName     = NewError(400, "InvalidUserName", "invalid name")
+	ErrInvalidUserUsername = NewError(400, "InvalidUserUsername", "invalid username")
+	ErrInvalidUserPassword = NewError(400, "InvalidUserPassword", "invalid password")
 )
 
 type User struct {
