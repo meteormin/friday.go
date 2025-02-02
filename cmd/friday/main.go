@@ -36,6 +36,7 @@ func init() {
 		Prefork:       true,
 		CaseSensitive: true,
 		AppName:       appName + " v" + appVersion,
+		ErrorHandler:  http.NewErrorHandler(),
 	})
 }
 
