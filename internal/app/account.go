@@ -55,8 +55,7 @@ type AccountQueryService struct {
 }
 
 func (a AccountQueryService) FindUser(id uint) (*domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+	return a.repo.FindByID(id)
 }
 
 func (a AccountQueryService) FindUserByUsername(username string) (*domain.User, error) {
