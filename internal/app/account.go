@@ -23,18 +23,25 @@ type AccountCommandService struct {
 }
 
 func (a *AccountCommandService) CreateUser(user domain.CreateUser) (*domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := user.Valid()
+	if err != nil {
+		return nil, err
+	}
+
+	return a.repo.Create(model)
 }
 
 func (a *AccountCommandService) UpdateUser(id uint, user domain.UpdateUser) (*domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := user.Valid()
+	if err != nil {
+		return nil, err
+	}
+
+	return a.repo.Update(id, model)
 }
 
 func (a *AccountCommandService) DeleteUser(id uint) error {
-	//TODO implement me
-	panic("implement me")
+	return a.repo.Delete(id)
 }
 
 func NewAccountCommandService(repo UserRepository) domain.UserCommand {
@@ -53,13 +60,11 @@ func (a AccountQueryService) FindUser(id uint) (*domain.User, error) {
 }
 
 func (a AccountQueryService) FindUserByUsername(username string) (*domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+	return a.repo.FindByUsername(username)
 }
 
 func (a AccountQueryService) FetchUsers() []domain.User {
-	//TODO implement me
-	panic("implement me")
+	return a.repo.Fetch()
 }
 
 func NewAccountQueryService(repo UserRepository) domain.UserQuery {
