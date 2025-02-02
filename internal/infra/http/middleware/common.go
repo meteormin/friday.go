@@ -22,10 +22,6 @@ func NewCommon(router fiber.Router) {
 	router.Use(requestid.New())
 	router.Use(cors.New())
 	router.Use(healthcheck.New())
-	router.Use(cache.New(cache.Config{
-		Expiration: time.Minute * 30,
-	}))
-	router.Use(etag.New())
 
 	if infra.GetConfig().Env != config.Release {
 		router.Use("/expose/envvars", envvar.New())
@@ -34,6 +30,12 @@ func NewCommon(router fiber.Router) {
 			return ctx.JSON(http.Fiber().GetRoutes())
 		})
 	}
+
+	router.Use(cache.New(cache.Config{
+		Expiration: time.Minute * 30,
+	}))
+
+	router.Use(etag.New())
 }
 
 func NewJwtGuard(router fiber.Router) {

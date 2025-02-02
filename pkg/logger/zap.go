@@ -12,18 +12,18 @@ import (
 
 // ZapLoggerConfig is custom logger configuration
 type ZapLoggerConfig struct {
-	Name        string        // logger name
-	TimeFormat  string        // time format
-	FilePath    string        // log file path
-	Filename    string        // log file name
-	MaxSize     int           // max log file size
-	MaxBackups  int           // max log file backups
-	MaxAge      int           // max log file age
-	Compress    bool          // compress log status
-	TimeKey     string        // time key
-	TimeZone    string        // time zone
-	LogLevel    zapcore.Level // log level
-	WithOptions []zap.Option  // zap.Option
+	Name        string        `yaml:"name" json:"name"`             // logger name
+	TimeFormat  string        `yaml:"timeFormat" json:"timeFormat"` // time format
+	FilePath    string        `yaml:"filePath" json:"filePath"`     // log file path
+	Filename    string        `yaml:"filename" json:"filename"`     // log file name
+	MaxSize     int           `yaml:"maxSize" json:"maxSize"`       // max log file size
+	MaxBackups  int           `yaml:"maxBackups" json:"maxBackups"` // max log file backups
+	MaxAge      int           `yaml:"maxAge" json:"maxAge"`         // max log file age
+	Compress    bool          `yaml:"compress" json:"compress"`     // compress log status
+	TimeKey     string        `yaml:"timeKey" json:"timeKey"`       // time key
+	TimeZone    string        `yaml:"timeZone" json:"timeZone"`     // time zone
+	LogLevel    zapcore.Level `yaml:"logLevel" json:"logLevel"`     // log level
+	WithOptions []zap.Option  `yaml:"-" json:"-"`                   // zap.Option
 }
 
 // defaultZapLoggerConfig is default logger configuration
@@ -177,6 +177,8 @@ func NewZapLogger(config ...ZapLoggerConfig) *zap.SugaredLogger {
 	}
 
 	gLoggers[cfg.Name] = logger
+
+	logger.Debug("logger initialized")
 
 	return logger
 }

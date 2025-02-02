@@ -1,4 +1,4 @@
-package handler
+package rest
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -8,11 +8,6 @@ import (
 	"github.com/meteormin/friday.go/internal/infra/http"
 	"time"
 )
-
-type AuthHandler struct {
-	command domain.UserCommand
-	query   domain.UserQuery
-}
 
 type SignInRequest struct {
 	Username string `json:"username"`
@@ -25,11 +20,21 @@ type SignupRequest struct {
 	Password string `json:"password"`
 }
 
+type UpdateUserRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
 type UserResource struct {
 	Name      string    `json:"name"`
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type AuthHandler struct {
+	command domain.UserCommand
+	query   domain.UserQuery
 }
 
 func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
@@ -93,8 +98,8 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	if token == nil || !ok {
 		return fiber.NewError(fiber.StatusUnauthorized, "Unauthorized")
 	}
-	username := token.Claims.(jwt.MapClaims)["username"].(string)
 
+	username := token.Claims.(jwt.MapClaims)["username"].(string)
 	user, err := auth.query.FindUserByUsername(username)
 	if err != nil {
 		return err
@@ -117,7 +122,32 @@ func NewAuthHandler(command domain.UserCommand, query domain.UserQuery) http.Add
 
 	return func(router fiber.Router) {
 		group := router.Group("/auth")
+		group.Post("/sign-up", handler.signUp)
 		group.Post("/sign-in", handler.signIn)
 		group.Get("/me", handler.me)
+	}
+}
+
+type UserHandler struct {
+	command domain.UserCommand
+	query   domain.UserQuery
+}
+
+func (handler *UserHandler) getAll(ctx *fiber.Ctx) error {
+	users := handler.query.FetchUsers()
+
+	return ctx.JSON(users)
+}
+
+func NewUserHandler(command domain.UserCommand, query domain.UserQuery) http.AddRouteFunc {
+
+	handler := &UserHandler{
+		command: command,
+		query:   query,
+	}
+
+	return func(router fiber.Router) {
+		group := router.Group("/users")
+		group.Get("/", handler.getAll)
 	}
 }

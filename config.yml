@@ -1,0 +1,20 @@
+env: dev
+app:
+  name: Friday.go
+  version: 0.0.1
+server:
+  port: 8080
+  jwt:
+    secret: "jwt-secret"
+    exp: 3600
+database:
+  name: friday
+  path: ./data/friday.db
+  debug: true
+logging:
+  name: friday
+  filePath: ./logs
+  filename: friday.log
+  timeZone: Asia/Seoul
+  compress: true
+  logLevel: -1
