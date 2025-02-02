@@ -22,7 +22,6 @@ func TestLoadWithViper(t *testing.T) {
 				appInfo: App{
 					Name:    "Friday.go test",
 					Version: "0.0.0",
-					Mod:     "test",
 				},
 			},
 			want: nil,

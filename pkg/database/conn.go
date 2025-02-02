@@ -16,11 +16,11 @@ import (
 var db = make(map[string]*gorm.DB)
 
 type Config struct {
-	gorm.Config
-	Name   string
-	Path   string
-	Debug  bool
-	Logger LoggerConfig
+	gorm.Config `yaml:"-" json:"-"`
+	Name        string       `yaml:"name" json:"name"`
+	Path        string       `yaml:"path" json:"path"`
+	Debug       bool         `yaml:"debug" json:"debug"`
+	Logger      LoggerConfig `yaml:"logger" json:"logger"`
 }
 
 type LoggerConfig struct {
@@ -108,6 +108,7 @@ func New(cfg Config) *gorm.DB {
 	}
 
 	db[cfg.Name] = d
+
 	return db[cfg.Name]
 }
 

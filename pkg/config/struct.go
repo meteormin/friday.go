@@ -14,8 +14,8 @@ const (
 )
 
 type App struct {
-	Name    string `yaml:"-"`
-	Version string `yaml:"-"`
+	Name    string `yaml:"name"`
+	Version string `yaml:"version"`
 }
 
 type Path struct {

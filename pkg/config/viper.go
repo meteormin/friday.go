@@ -26,7 +26,13 @@ func LoadWithViper(in string, appInfo App) *Config {
 		log.Fatalf("Unable to decode into struct, %v", err)
 	}
 
-	cfg.App = appInfo
+	if cfg.App.Name == "" {
+		cfg.App.Name = appInfo.Name
+	}
+
+	if cfg.App.Version == "" {
+		cfg.App.Version = appInfo.Version
+	}
 
 	return &cfg
 }
