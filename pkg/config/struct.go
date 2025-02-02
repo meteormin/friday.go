@@ -1,14 +1,21 @@
 package config
 
 import (
-	"friday.go/pkg/database"
-	"friday.go/pkg/logger"
+	"github.com/meteormin/friday.go/pkg/database"
+	"github.com/meteormin/friday.go/pkg/logger"
+)
+
+type Env string
+
+const (
+	Test    Env = "test"
+	Dev     Env = "dev"
+	Release Env = "release"
 )
 
 type App struct {
 	Name    string `yaml:"-"`
 	Version string `yaml:"-"`
-	Mod     string `yaml:"-"`
 }
 
 type Path struct {
@@ -17,8 +24,18 @@ type Path struct {
 	Log  string `yaml:"log"`
 }
 
+type Server struct {
+	Port int `yaml:"port"`
+	Jwt  struct {
+		Secret string `yaml:"secret"`
+		Exp    int    `yaml:"exp"`
+	} `yaml:"jwt"`
+}
+
 type Config struct {
-	App      App                    `yaml:"-"`
+	Env      Env                    `yaml:"env"`
+	App      App                    `yaml:"app"`
+	Server   Server                 `yaml:"server"`
 	Database database.Config        `yaml:"database"`
 	Logging  logger.ZapLoggerConfig `yaml:"logging"`
 	Path     Path                   `yaml:"path"`

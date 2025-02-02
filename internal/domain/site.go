@@ -28,5 +28,6 @@ type SiteQueryDTO struct {
 
 type SiteQuery interface {
 	FindSite(id uint) Site
+
 	RetrieveSite(query SiteQueryDTO) Site
 }

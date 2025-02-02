@@ -24,14 +24,14 @@ help: Makefile
 	sed -n 's/^##/	/p' $< | column -t -s ':' |  sed -e 's/^/ /'
 	echo ""
 
-##run mod={entrypoint: server, client, standalone}: run application
+##run mod={entrypoint: friday}: run application
 .PHONY: run
 run:
-	go run ./$(mod)/main.go
+	go run ./cmd/$(mod)/main.go
 
 ldflags=-ldflags "-linkmode external -extldflags -static"
 
-##build os={os: linux, darwin} arch={arch: amd64, arm64} mod={entrypoint: server, client, standalone}: build application
+##build os={os: linux, darwin} arch={arch: amd64, arm64} mod={entrypoint: friday}: build application
 .PHONY: build
 build:
 ifeq ($(os), linux)
@@ -40,7 +40,7 @@ else
 	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build -x -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
 endif
 
-##release mod={entrypoint: server, client, standalone} tag={tag: v1.0.0}: release application
+##release mod={entrypoint: friday} tag={tag: v1.0.0}: release application
 .PHONY: release
 release:
 	mkdir -p release/$(tag)
@@ -48,3 +48,8 @@ release:
 		$(foreach arch, $(SUPPORTED_ARCH), \
 			$(MAKE) build os=$(os) arch=$(arch) mod=$(mod)))
 	cp build/$(mod)-$(os)-$(arch) release/$(tag)
+
+##clean: clean application
+.PHONY: clean
+clean:
+	rm -rf build/*

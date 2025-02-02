@@ -28,3 +28,15 @@ type PostCommand interface {
 	UpdatePost(id uint, post UpdatePost) Post
 	DeletePost(id uint) Post
 }
+
+type PostQueryDTO struct {
+	Keyword string
+}
+
+type PostQuery interface {
+	FindPost(id uint) Post
+
+	FetchPosts() []Post
+
+	RetrievePosts(query PostQueryDTO) []Post
+}

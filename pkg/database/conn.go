@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"friday.go/pkg/logger"
+	"github.com/meteormin/friday.go/pkg/logger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gLogger "gorm.io/gorm/logger"
