@@ -10,12 +10,15 @@ import (
 	"github.com/meteormin/friday.go/internal/infra/db"
 	"github.com/meteormin/friday.go/internal/infra/http"
 	"github.com/meteormin/friday.go/internal/infra/http/middleware"
+	"github.com/meteormin/friday.go/internal/infra/task"
 	"github.com/meteormin/friday.go/pkg/config"
 	"github.com/meteormin/friday.go/pkg/logger"
+	"github.com/meteormin/friday.go/pkg/scheduler"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 )
 
 const (
@@ -39,6 +42,22 @@ func init() {
 	}
 
 	l.Info("Database connection established.")
+
+	loc, err := time.LoadLocation(cfg.TZ)
+	if err != nil {
+		l.Fatal(err)
+	}
+
+	cfg.Scheduler.Location = loc
+
+	jobRepo := task.NewJobRepository(infra.GetDB())
+	cfg.Scheduler.Monitor = jobRepo
+	cfg.Scheduler.MonitorStatus = jobRepo
+
+	err = scheduler.New(cfg.Scheduler)
+	if err != nil {
+		l.Fatal(err)
+	}
 
 	http.NewFiber(fiber.Config{
 		CaseSensitive:     true,
@@ -82,9 +101,11 @@ func main() {
 	}
 
 	fiberApp := http.Fiber()
+	taskScheduler := infra.GetScheduler()
 
 	// Listen from a different goroutine
 	go func() {
+		taskScheduler.Start()
 		if err := fiberApp.Listen(":" + strconv.Itoa(cfg.Server.Port)); err != nil {
 			l.Panic(err)
 		}
@@ -98,5 +119,11 @@ func main() {
 	_ = fiberApp.Shutdown()
 
 	fmt.Println("Running cleanup tasks...")
+
+	err := infra.GetScheduler().Shutdown()
+	if err != nil {
+		l.Fatal(err)
+	}
+
 	fmt.Println("Fiber was successful shutdown.")
 }

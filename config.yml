@@ -18,3 +18,5 @@ logging:
   timeZone: Asia/Seoul
   compress: true
   logLevel: -1
+scheduler:
+  name: friday
