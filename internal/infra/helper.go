@@ -1,9 +1,11 @@
 package infra
 
 import (
+	"github.com/go-co-op/gocron/v2"
 	"github.com/meteormin/friday.go/pkg/config"
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
+	"github.com/meteormin/friday.go/pkg/scheduler"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -30,4 +32,8 @@ func GetLogger() *zap.SugaredLogger {
 		return logger.GetLogger(gCfg.Logging.Name)
 	}
 	return logger.GetLogger()
+}
+
+func GetScheduler() gocron.Scheduler {
+	return scheduler.GetScheduler()
 }

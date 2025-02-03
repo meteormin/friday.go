@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
+	"github.com/meteormin/friday.go/pkg/scheduler"
 )
 
 type Env string
@@ -33,10 +34,12 @@ type Server struct {
 }
 
 type Config struct {
-	Env      Env                    `yaml:"env"`
-	App      App                    `yaml:"app"`
-	Server   Server                 `yaml:"server"`
-	Database database.Config        `yaml:"database"`
-	Logging  logger.ZapLoggerConfig `yaml:"logging"`
-	Path     Path                   `yaml:"path"`
+	Env       Env                    `yaml:"env"`
+	TZ        string                 `yaml:"timeZone"`
+	Path      Path                   `yaml:"path"`
+	App       App                    `yaml:"app"`
+	Server    Server                 `yaml:"server"`
+	Database  database.Config        `yaml:"database"`
+	Logging   logger.ZapLoggerConfig `yaml:"logging"`
+	Scheduler scheduler.Config       `yaml:"scheduler"`
 }

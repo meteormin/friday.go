@@ -24,8 +24,8 @@ type Config struct {
 }
 
 type LoggerConfig struct {
-	gLogger.Config
-	LogPath string
+	gLogger.Config `yaml:"-" json:"-"`
+	LogPath        string `yaml:"logPath" json:"logPath"`
 }
 
 type HasWithMigrate interface {
@@ -74,6 +74,10 @@ func resolveConfig(cfg Config) Config {
 
 	if cfg.Path == "" {
 		cfg.Path = defaultConfig.Path
+	}
+
+	if cfg.Debug {
+		cfg.Logger.LogLevel = gLogger.Info
 	}
 
 	return cfg
