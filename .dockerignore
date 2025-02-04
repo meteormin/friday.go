@@ -1,0 +1,14 @@
+.env
+.idea
+.vscode
+
+.git/
+node_modules/
+build/
+data/
+logs/
+devtools/
+
+.DS_Store
+
+

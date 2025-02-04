@@ -4,13 +4,6 @@ import (
 	"time"
 )
 
-var (
-	ErrNotFoundUser        = NewError(404, "NotFoundUser", "user not found")
-	ErrInvalidUserName     = NewError(400, "InvalidUserName", "invalid name")
-	ErrInvalidUserUsername = NewError(400, "InvalidUserUsername", "invalid username")
-	ErrInvalidUserPassword = NewError(400, "InvalidUserPassword", "invalid password")
-)
-
 type User struct {
 	ID        uint
 	Name      string
@@ -20,15 +13,18 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-func (u *User) CheckPassword(inputPassword string) error {
-	if !checkPasswordHash(inputPassword, u.Password) {
-		return ErrInvalidUserPassword
-	}
-
-	return nil
+func (u *User) CheckPassword(inputPassword string) bool {
+	return !checkPasswordHash(inputPassword, u.Password)
 }
 
-func (u *User) Update(update *User) {
+func (u *User) HashPassword() error {
+	hashed, err := hashPassword(u.Password)
+	u.Password = hashed
+
+	return err
+}
+
+func (u *User) Update(update *User) error {
 	if update.Name != "" {
 		u.Name = update.Name
 	}
@@ -38,66 +34,14 @@ func (u *User) Update(update *User) {
 	}
 
 	if update.Password != "" {
+
 		u.Password = update.Password
-	}
-}
 
-type CreateUser struct {
-	Name     string
-	Username string
-	Password string
-}
-
-func (u CreateUser) Valid() (*User, error) {
-	if u.Name == "" || len(u.Name) < 4 {
-		return nil, ErrInvalidUserName
+		err := u.HashPassword()
+		if err != nil {
+			return err
+		}
 	}
 
-	if u.Username == "" || len(u.Username) < 4 {
-		return nil, ErrInvalidUserUsername
-	}
-
-	if u.Password == "" || len(u.Password) < 8 {
-		return nil, ErrInvalidUserPassword
-	}
-
-	hashedPassword, err := hashPassword(u.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	return &User{Name: u.Name, Username: u.Username, Password: hashedPassword}, nil
-}
-
-type UpdateUser struct {
-	Name     string
-	Password string
-}
-
-func (u UpdateUser) Valid() (*User, error) {
-	if u.Name == "" || len(u.Name) < 4 {
-		return nil, ErrInvalidUserName
-	}
-
-	if u.Password == "" || len(u.Password) < 8 {
-		return nil, ErrInvalidUserPassword
-	}
-
-	return &User{Name: u.Name, Password: u.Password}, nil
-}
-
-type UserCommand interface {
-	CreateUser(user CreateUser) (*User, error)
-
-	UpdateUser(id uint, user UpdateUser) (*User, error)
-
-	DeleteUser(id uint) error
-}
-
-type UserQuery interface {
-	FindUser(id uint) (*User, error)
-
-	FindUserByUsername(username string) (*User, error)
-
-	FetchUsers() []User
+	return nil
 }

@@ -3,7 +3,7 @@ package rest
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/meteormin/friday.go/internal/domain"
+	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/infra"
 	"github.com/meteormin/friday.go/internal/infra/http"
 	"time"
@@ -33,8 +33,8 @@ type UserResource struct {
 }
 
 type AuthHandler struct {
-	command domain.UserCommand
-	query   domain.UserQuery
+	command port.UserCommandUseCase
+	query   port.UserQueryUseCase
 }
 
 func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
@@ -44,7 +44,7 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	user, err := auth.command.CreateUser(domain.CreateUser{
+	user, err := auth.command.CreateUser(port.CreateUser{
 		Name:     req.Name,
 		Username: req.Username,
 		Password: req.Password,
@@ -71,12 +71,11 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 
 	exists, err := auth.query.FindUserByUsername(req.Username)
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusUnauthorized, "Access Denied")
 	}
 
-	err = exists.CheckPassword(req.Password)
-	if err != nil {
-		return err
+	if exists.CheckPassword(req.Password) {
+		return fiber.NewError(fiber.StatusUnauthorized, "Access Denied")
 	}
 
 	exp := infra.GetConfig().Server.Jwt.Exp
@@ -113,7 +112,7 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	})
 }
 
-func NewAuthHandler(command domain.UserCommand, query domain.UserQuery) http.AddRouteFunc {
+func NewAuthHandler(command port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
 
 	handler := &AuthHandler{
 		command: command,
@@ -129,8 +128,8 @@ func NewAuthHandler(command domain.UserCommand, query domain.UserQuery) http.Add
 }
 
 type UserHandler struct {
-	command domain.UserCommand
-	query   domain.UserQuery
+	command port.UserCommandUseCase
+	query   port.UserQueryUseCase
 }
 
 func (handler *UserHandler) getAll(ctx *fiber.Ctx) error {
@@ -139,7 +138,7 @@ func (handler *UserHandler) getAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(users)
 }
 
-func NewUserHandler(command domain.UserCommand, query domain.UserQuery) http.AddRouteFunc {
+func NewUserHandler(command port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
 
 	handler := &UserHandler{
 		command: command,

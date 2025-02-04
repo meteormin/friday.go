@@ -2,7 +2,7 @@ package repo
 
 import (
 	"errors"
-	"github.com/meteormin/friday.go/internal/app"
+	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
 	"github.com/meteormin/friday.go/internal/infra/db/entity"
 	"gorm.io/gorm"
@@ -95,7 +95,7 @@ func (u UserRepositoryImpl) FindByUsername(username string) (*domain.User, error
 	return mapToDomainModel(user), nil
 }
 
-func NewUserRepository(db *gorm.DB) app.UserRepository {
+func NewUserRepository(db *gorm.DB) port.UserRepository {
 	return &UserRepositoryImpl{
 		db: db,
 	}
