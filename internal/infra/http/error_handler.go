@@ -3,7 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/meteormin/friday.go/internal/domain"
+	app_errors "github.com/meteormin/friday.go/internal/app/errors"
 )
 
 type ErrorResponse struct {
@@ -14,7 +14,7 @@ type ErrorResponse struct {
 func NewErrorHandler() fiber.ErrorHandler {
 	return func(c *fiber.Ctx, err error) error {
 		var fiberError *fiber.Error
-		var domainError *domain.Error
+		var domainError *app_errors.Error
 		if errors.As(err, &fiberError) {
 			return c.Status(fiberError.Code).JSON(ErrorResponse{
 				Title:   fiberError.Message,

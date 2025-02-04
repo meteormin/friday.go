@@ -69,15 +69,15 @@ func init() {
 
 func authHandler() http.AddRouteFunc {
 	userRepo := repo.NewUserRepository(infra.GetDB())
-	userCommand := app.NewAccountCommandService(userRepo)
-	userQuery := app.NewAccountQueryService(userRepo)
+	userCommand := app.NewUserCommandService(userRepo)
+	userQuery := app.NewUserQueryService(userRepo)
 	return rest.NewAuthHandler(userCommand, userQuery)
 }
 
 func userHandler() http.AddRouteFunc {
 	userRepo := repo.NewUserRepository(infra.GetDB())
-	userCommand := app.NewAccountCommandService(userRepo)
-	userQuery := app.NewAccountQueryService(userRepo)
+	userCommand := app.NewUserCommandService(userRepo)
+	userQuery := app.NewUserQueryService(userRepo)
 	return rest.NewUserHandler(userCommand, userQuery)
 }
 

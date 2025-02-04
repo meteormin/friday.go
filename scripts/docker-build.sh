@@ -3,12 +3,15 @@
 BASEDIR=$(dirname "$0")
 
 tag=$1
-buildArgs=$2
-platform=$3
+platform=$2
+
+shift 2
+
+buildArgs=$@
 
 dockerImageDir="$BASEDIR/../.docker"
-imageName="prs-api"
-sourcePath="$BASEDIR/../prs"
+imageName="friday-api"
+sourcePath="$BASEDIR/../"
 
 echo "[Docker image build] tag=$tag"
 echo "buildArgs=$buildArgs"
@@ -39,11 +42,11 @@ fi
 echo "* start docker build"
 if [ "$platform" = "" ]; then
   docker build -t $imageName:$tag \
-  --build-arg="$buildArgs" \
+  $(echo "$buildArgs" | xargs -n1 echo --build-arg) \
   -f $sourcePath/Dockerfile $sourcePath
 else
   docker buildx build -t $imageName:$tag \
   --platform="$platform" \
-  --build-arg="$buildArgs" \
+  $(echo "$buildArgs" | xargs -n1 echo --build-arg) \
   -f $sourcePath/Dockerfile $sourcePath
 fi
