@@ -27,6 +27,8 @@ WORKDIR /app
 
 COPY --from=build /app/build/ .
 
+COPY config.yml .
+
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "./main -port=8080"]

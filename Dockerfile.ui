@@ -1,0 +1,25 @@
+FROM node:22.13-alpine AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install && npm run build
+
+FROM node:20.9.0-alpine AS production
+
+WORKDIR /app
+
+ARG TIME_ZONE=Asia/Seoul
+
+RUN apk --no-cache add tzdata && \
+    cp /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && \
+    echo "$TIME_ZONE" > /etc/timezone \
+    apk del tzdata \
+    && npm install -g serve
+
+COPY --from=build /dm-console/build /dm-console
+
+EXPOSE 3000
+
+ENTRYPOINT [ "serve", "-l", "3000", "-s", "." ]

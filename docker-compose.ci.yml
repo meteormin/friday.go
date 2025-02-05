@@ -1,0 +1,24 @@
+services:
+  api:
+    image: friday-api:${TAG:-latest}
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    networks:
+      - friday
+  ui:
+    image: friday-ui:${TAG:-latest}
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://api:8080
+    depends_on:
+      - api
+    networks:
+      - friday
+networks:
+  friday:
+    driver: bridge
