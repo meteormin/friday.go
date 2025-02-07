@@ -9,8 +9,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/meteormin/friday.go/internal/infra"
-	"github.com/meteormin/friday.go/internal/infra/http"
+	"github.com/meteormin/friday.go/internal/core"
+	"github.com/meteormin/friday.go/internal/core/http"
 	"github.com/meteormin/friday.go/pkg/config"
 	"time"
 )
@@ -23,7 +23,7 @@ func NewCommon(router fiber.Router) {
 	router.Use(cors.New())
 	router.Use(healthcheck.New())
 
-	if infra.GetConfig().Env != config.Release {
+	if core.GetConfig().Env != config.Release {
 		router.Use("/expose/envvars", envvar.New())
 		router.Use("/metrics", monitor.New())
 		router.Use("/routes", func(ctx *fiber.Ctx) error {
@@ -40,6 +40,6 @@ func NewCommon(router fiber.Router) {
 
 func NewJwtGuard(router fiber.Router) {
 	router.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte(infra.GetConfig().Server.Jwt.Secret),
+		SigningKey: []byte(core.GetConfig().Server.Jwt.Secret),
 	}))
 }

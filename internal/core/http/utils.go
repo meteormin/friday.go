@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/meteormin/friday.go/internal/infra"
+	"github.com/meteormin/friday.go/internal/core"
 	"time"
 )
 
@@ -14,5 +14,5 @@ func GenerateToken(username string, exp time.Duration) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(infra.GetConfig().Server.Jwt.Secret)
+	return token.SignedString(core.GetConfig().Server.Jwt.Secret)
 }

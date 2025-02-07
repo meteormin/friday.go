@@ -3,7 +3,8 @@ package domain
 type File struct {
 	ID         uint
 	OriginName string
-	Extension  string
-	Size       uint
+	ConvName   string
+	MimeType   string
+	Size       uint64
 	FilePath   string
 }

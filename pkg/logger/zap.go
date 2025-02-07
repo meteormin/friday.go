@@ -104,7 +104,7 @@ func GetLogger(loggerName ...string) *zap.SugaredLogger {
 		}
 	} else {
 		if _, ok := gLoggers[loggerName[0]]; ok {
-			logger = gLoggers[loggerName[0]].Named(loggerName[0])
+			logger = gLoggers[loggerName[0]]
 		}
 	}
 

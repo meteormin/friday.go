@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
-	"github.com/meteormin/friday.go/internal/infra"
+	"github.com/meteormin/friday.go/internal/core"
 	"gorm.io/gorm"
 	"time"
 )
@@ -98,7 +98,7 @@ func (j *JobRepositoryImpl) IncrementJob(id uuid.UUID, name string, tags []strin
 			Tags:  NewJobTags(tags),
 		}
 	} else if err != nil {
-		infra.GetLogger().Error(err)
+		core.GetLogger().Error(err)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (j *JobRepositoryImpl) IncrementJob(id uuid.UUID, name string, tags []strin
 
 	_, err = j.Save(*job)
 	if err != nil {
-		infra.GetLogger().Error(err)
+		core.GetLogger().Error(err)
 	}
 }
 
@@ -122,7 +122,7 @@ func (j *JobRepositoryImpl) RecordJobTiming(startAt, endAt time.Time, id uuid.UU
 			Tags:  NewJobTags(tags),
 		}
 	} else if err != nil {
-		infra.GetLogger().Error(err)
+		core.GetLogger().Error(err)
 		return
 	}
 
@@ -134,21 +134,21 @@ func (j *JobRepositoryImpl) RecordJobTiming(startAt, endAt time.Time, id uuid.UU
 
 	_, err = j.Save(*job)
 	if err != nil {
-		infra.GetLogger().Error(err)
+		core.GetLogger().Error(err)
 	}
 }
 
 func (j *JobRepositoryImpl) RecordJobTimingWithStatus(startAt, endAt time.Time, id uuid.UUID, name string, tags []string, status gocron.JobStatus, err error) {
 	_, err = j.FindByJobID(id)
 	if err != nil {
-		infra.GetLogger().Error(err)
+		core.GetLogger().Error(err)
 		return
 	}
 
-	infra.GetLogger().Debugf("JobID: %s", id.String())
-	infra.GetLogger().Debugf("Job: %s", name)
-	infra.GetLogger().Debugf("Status: %s", status)
-	infra.GetLogger().Debugf("Start: %s, End: %s", startAt, endAt)
+	core.GetLogger().Debugf("JobID: %s", id.String())
+	core.GetLogger().Debugf("Job: %s", name)
+	core.GetLogger().Debugf("Status: %s", status)
+	core.GetLogger().Debugf("Start: %s, End: %s", startAt, endAt)
 }
 
 func NewJobRepository(db *gorm.DB) JobRepository {

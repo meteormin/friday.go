@@ -1,6 +1,7 @@
-package infra
+package core
 
 import (
+	"github.com/dgraph-io/badger/v4"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/meteormin/friday.go/pkg/config"
 	"github.com/meteormin/friday.go/pkg/database"
@@ -36,4 +37,14 @@ func GetLogger() *zap.SugaredLogger {
 
 func GetScheduler() gocron.Scheduler {
 	return scheduler.GetScheduler()
+}
+
+var storage *badger.DB
+
+func SetStorage(s *badger.DB) {
+	storage = s
+}
+
+func GetStorage() *badger.DB {
+	return storage
 }

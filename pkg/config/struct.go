@@ -20,9 +20,9 @@ type App struct {
 }
 
 type Path struct {
-	Base string `yaml:"base"`
-	Data string `yaml:"data"`
-	Log  string `yaml:"log"`
+	Data   string `yaml:"data"`
+	Log    string `yaml:"log"`
+	Secret string `yaml:"secret"`
 }
 
 type Server struct {
@@ -40,6 +40,7 @@ type Config struct {
 	App       App                    `yaml:"app"`
 	Server    Server                 `yaml:"server"`
 	Database  database.Config        `yaml:"database"`
+	Badger    database.BadgerConfig  `yaml:"badger"`
 	Logging   logger.ZapLoggerConfig `yaml:"logging"`
 	Scheduler scheduler.Config       `yaml:"scheduler"`
 }

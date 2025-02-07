@@ -13,7 +13,7 @@ FROM golang:1.23-alpine AS build
 
 RUN apk add --no-cache make gcc musl-dev
 
-ARG MOD
+ARG MOD=friday
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ FROM base AS  deploy
 
 WORKDIR /app
 
-COPY --from=build /app/build/ .
+COPY --from=build /app .
 
 COPY config.yml .
 

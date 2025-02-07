@@ -3,8 +3,8 @@ package repo
 import (
 	"errors"
 	"github.com/meteormin/friday.go/internal/app/port"
+	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
-	"github.com/meteormin/friday.go/internal/infra/db/entity"
 	"gorm.io/gorm"
 )
 
@@ -23,11 +23,11 @@ func (u UserRepositoryImpl) ExistsByUsername(username string) bool {
 
 func (u UserRepositoryImpl) Create(user *domain.User) (*domain.User, error) {
 
-	ent := mapToEntity(user)
+	ent := mapToUserEntity(user)
 
 	u.db.Create(&ent)
 
-	return mapToDomainModel(ent), nil
+	return mapToUserModel(ent), nil
 }
 
 func (u UserRepositoryImpl) Update(id uint, user *domain.User) (*domain.User, error) {
@@ -42,7 +42,7 @@ func (u UserRepositoryImpl) Update(id uint, user *domain.User) (*domain.User, er
 	ent.Name = user.Name
 	ent.Password = user.Password
 
-	return mapToDomainModel(ent), nil
+	return mapToUserModel(ent), nil
 }
 
 func (u UserRepositoryImpl) Delete(id uint) error {
@@ -76,7 +76,7 @@ func (u UserRepositoryImpl) Fetch() []domain.User {
 
 	models := make([]domain.User, len(users))
 	for _, model := range users {
-		models = append(models, *mapToDomainModel(model))
+		models = append(models, *mapToUserModel(model))
 	}
 
 	return models
@@ -92,7 +92,7 @@ func (u UserRepositoryImpl) FindByUsername(username string) (*domain.User, error
 		return nil, tx.Error
 	}
 
-	return mapToDomainModel(user), nil
+	return mapToUserModel(user), nil
 }
 
 func NewUserRepository(db *gorm.DB) port.UserRepository {
@@ -101,7 +101,7 @@ func NewUserRepository(db *gorm.DB) port.UserRepository {
 	}
 }
 
-func mapToEntity(user *domain.User) entity.User {
+func mapToUserEntity(user *domain.User) entity.User {
 	return entity.User{
 		Name:     user.Name,
 		Username: user.Username,
@@ -109,7 +109,7 @@ func mapToEntity(user *domain.User) entity.User {
 	}
 }
 
-func mapToDomainModel(user entity.User) *domain.User {
+func mapToUserModel(user entity.User) *domain.User {
 	return &domain.User{
 		ID:        user.ID,
 		Name:      user.Name,

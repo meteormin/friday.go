@@ -11,6 +11,9 @@ database:
   name: friday
   path: ./data/friday.db
   debug: true
+badger:
+  path: ./data/storage
+  cacheSize: 100
 logging:
   name: friday
   filePath: ./logs
@@ -20,3 +23,7 @@ logging:
   logLevel: -1
 scheduler:
   name: friday
+path:
+  data: ./data
+  logs: ./logs
+  secret: ./data/secret

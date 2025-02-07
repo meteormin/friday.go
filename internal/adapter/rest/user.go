@@ -4,8 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/meteormin/friday.go/internal/app/port"
-	"github.com/meteormin/friday.go/internal/infra"
-	"github.com/meteormin/friday.go/internal/infra/http"
+	"github.com/meteormin/friday.go/internal/core"
+	"github.com/meteormin/friday.go/internal/core/http"
 	"time"
 )
 
@@ -78,7 +78,7 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, "Access Denied")
 	}
 
-	exp := infra.GetConfig().Server.Jwt.Exp
+	exp := core.GetConfig().Server.Jwt.Exp
 	token, err := http.GenerateToken(req.Username,
 		time.Second*time.Duration(exp))
 

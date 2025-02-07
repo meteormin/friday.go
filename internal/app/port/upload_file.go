@@ -4,7 +4,7 @@ import (
 	"github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/domain"
 	"io"
-	"path/filepath"
+	"mime"
 )
 
 type UploadFile struct {
@@ -24,8 +24,8 @@ func (u UploadFile) Valid() (*domain.File, error) {
 
 	return &domain.File{
 		OriginName: u.FileName,
-		Extension:  filepath.Ext(u.FileName),
-		Size:       u.Size,
+		MimeType:   mime.TypeByExtension(u.FileName),
+		Size:       uint64(u.Size),
 		FilePath:   "",
 	}, nil
 }

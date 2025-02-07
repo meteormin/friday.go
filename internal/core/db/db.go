@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/meteormin/friday.go/internal/infra/db/entity"
+	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
 )

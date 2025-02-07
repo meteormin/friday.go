@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
-	_ "github.com/meteormin/friday.go/internal/infra"
 	"path"
 )
 
