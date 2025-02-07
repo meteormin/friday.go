@@ -1,16 +1,17 @@
 package port
 
 import (
+	"github.com/google/uuid"
 	"github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/domain"
-	"io"
 	"mime"
+	"path"
 )
 
 type UploadFile struct {
 	FileName string
 	Size     uint
-	Reader   io.Reader
+	Data     []byte
 }
 
 func (u UploadFile) Valid() (*domain.File, error) {
@@ -18,15 +19,21 @@ func (u UploadFile) Valid() (*domain.File, error) {
 		return nil, errors.ErrInvalidFileName
 	}
 
-	if u.Reader == nil {
+	if u.Data == nil {
 		return nil, errors.ErrInvalidFile
+	}
+
+	convName, err := uuid.NewUUID()
+	if err != nil {
+		return nil, err
 	}
 
 	return &domain.File{
 		OriginName: u.FileName,
+		ConvName:   convName.String(),
 		MimeType:   mime.TypeByExtension(u.FileName),
 		Size:       uint64(u.Size),
-		FilePath:   "",
+		FilePath:   path.Join("tmp", convName.String()),
 	}, nil
 }
 

@@ -1,10 +1,8 @@
 package app
 
 import (
-	"github.com/google/uuid"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
-	"path"
 )
 
 type UploadFileCommandService struct {
@@ -17,17 +15,10 @@ func (u UploadFileCommandService) UploadFile(uploadFile port.UploadFile) (*domai
 		return nil, err
 	}
 
-	fileUUID, err := uuid.NewUUID()
-	if err != nil {
-		return nil, err
-	}
-
-	file.FilePath = path.Join("tmp", fileUUID.String())
-
 	return u.repo.CreateFile(file)
 }
 
-func NewUploadFileCommandService(repo port.FileRepository) port.UploadFileUseCase {
+func NewUploadFileService(repo port.FileRepository) port.UploadFileUseCase {
 	return &UploadFileCommandService{
 		repo: repo,
 	}

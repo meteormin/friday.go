@@ -33,7 +33,7 @@ type UserResource struct {
 }
 
 type AuthHandler struct {
-	command port.UserCommandUseCase
+	useCase port.UserCommandUseCase
 	query   port.UserQueryUseCase
 }
 
@@ -44,7 +44,7 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	user, err := auth.command.CreateUser(port.CreateUser{
+	user, err := auth.useCase.CreateUser(port.CreateUser{
 		Name:     req.Name,
 		Username: req.Username,
 		Password: req.Password,
@@ -112,10 +112,10 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	})
 }
 
-func NewAuthHandler(command port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
+func NewAuthHandler(useCase port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
 
 	handler := &AuthHandler{
-		command: command,
+		useCase: useCase,
 		query:   query,
 	}
 
