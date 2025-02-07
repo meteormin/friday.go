@@ -105,7 +105,7 @@ func generateEncryptionKey(secretPath string) ([]byte, error) {
 	if _, err := os.Stat(secretFile); err == nil {
 		key, err := os.ReadFile(secretFile)
 		if err == nil {
-			core.GetLogger().Debug("Encryption Key already exists.")
+			core.GetLogger().Debug("Exists Encryption Key")
 			return key, nil
 		}
 	}
