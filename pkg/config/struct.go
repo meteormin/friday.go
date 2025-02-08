@@ -26,7 +26,8 @@ type Path struct {
 }
 
 type Server struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 	Jwt  struct {
 		Secret string `yaml:"secret"`
 		Exp    int    `yaml:"exp"`

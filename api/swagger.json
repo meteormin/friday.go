@@ -1,0 +1,31 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Friday.go API",
+        "title": "Friday.go API",
+        "contact": {
+            "name": "meteormin",
+            "url": "https://github.com/meteormin/friday.go",
+            "email": "miniyu97@gmail.com"
+        },
+        "version": "{{.Version}}"
+    },
+    "host": "{{.Host}}",
+    "basePath": "/",
+    "paths": {},
+    "tags": [
+        {
+            "name": "api"
+        },
+        {
+            "name": "auth"
+        },
+        {
+            "name": "upload-file"
+        }
+    ]
+}

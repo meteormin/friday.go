@@ -49,6 +49,9 @@ func Boot() {
 	}
 
 	storage, err := database.NewBadger(cfg.Badger)
+	if err != nil {
+		l.Fatal(err)
+	}
 
 	core.SetStorage(storage)
 
@@ -84,7 +87,7 @@ func generateEncryptionKey(secretPath string) ([]byte, error) {
 	if _, err := os.Stat(secretFile); err == nil {
 		key, err := os.ReadFile(secretFile)
 		if err == nil {
-			core.GetLogger().Debug("Exists Encryption Key")
+			core.GetLogger().Debug("Exists Encryption Key...")
 			return key, nil
 		}
 	}

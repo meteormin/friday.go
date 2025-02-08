@@ -1,0 +1,20 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: miniyu97@gmail.com
+    name: meteormin
+    url: https://github.com/meteormin/friday.go
+  description: Friday.go API
+  title: Friday.go API
+  version: "{{.Version}}"
+servers:
+- url: "http://{{.Host}}/"
+- url: "https://{{.Host}}/"
+tags:
+- name: api
+- name: auth
+- name: upload-file
+paths: {}
+components:
+  schemas: {}
+x-original-swagger-version: "2.0"

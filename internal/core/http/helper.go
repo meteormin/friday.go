@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+type ContentResource[T interface{}] struct {
+	Content []T `json:"content"`
+	Length  int `json:"length"`
+}
+
+func NewContentResource[T interface{}](content []T) ContentResource[T] {
+	return ContentResource[T]{
+		Content: content,
+		Length:  len(content),
+	}
+}
+
 // GenerateToken JWT 토큰 생성 함수
 func GenerateToken(username string, exp time.Duration) (string, error) {
 	claims := jwt.MapClaims{

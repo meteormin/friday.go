@@ -5,38 +5,21 @@ type Post struct {
 	Title     string
 	Content   string
 	FileID    uint
+	File      *File
 	SiteID    uint
+	Site      *Site
+	Tag       []Tag
 	CreatedAt string
 	UpdatedAt string
 }
 
-type CreatePost struct {
-	Title   string
-	Content string
-	FileID  uint
-	SiteID  uint
+type Site struct {
+	ID    uint
+	Host  string
+	Alias string
 }
 
-type UpdatePost struct {
-	Title   string
-	Content string
-	FileID  uint
-}
-
-type PostCommand interface {
-	CreatePost(post CreatePost) Post
-	UpdatePost(id uint, post UpdatePost) Post
-	DeletePost(id uint) Post
-}
-
-type PostQueryDTO struct {
-	Keyword string
-}
-
-type PostQuery interface {
-	FindPost(id uint) Post
-
-	FetchPosts() []Post
-
-	RetrievePosts(query PostQueryDTO) []Post
+type Tag struct {
+	ID  uint
+	Tag string
 }
