@@ -135,6 +135,20 @@ func uploadFileHandler() http.AddRouteFunc {
 	return rest.NewUploadFileHandler(fileCommand)
 }
 
+func siteHandler() http.AddRouteFunc {
+	siteRepo := repo.NewSiteRepository(core.GetDB())
+	siteCommand := app.NewSiteCommandService(siteRepo)
+	siteQuery := app.NewSiteQueryService(siteRepo)
+	return rest.NewSiteHandler(siteCommand, siteQuery)
+}
+
+func postHandler() http.AddRouteFunc {
+	postRepo := repo.NewPostRepository(core.GetDB())
+	postCommand := app.NewPostCommandService(postRepo)
+	postQuery := app.NewPostQueryService(postRepo)
+	return rest.NewPostHandler(postCommand, postQuery)
+}
+
 func routes() {
 	http.Route("/api-docs", func(router fiber.Router) {
 		router.Get("/swagger/*", swagger.HandlerDefault)
@@ -146,11 +160,16 @@ func routes() {
 		auth := authHandler()
 		user := userHandler()
 		uploadFile := uploadFileHandler()
+		sites := siteHandler()
+		posts := postHandler()
 
 		tasks(router)
 		auth(router)
 		middleware.NewJwtGuard(router)
 		user(router)
 		uploadFile(router)
+		sites(router)
+		posts(router)
+
 	})
 }

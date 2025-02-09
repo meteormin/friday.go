@@ -36,7 +36,7 @@ func (a *UserCommandService) UpdateUser(id uint, user port.UpdateUser) (*domain.
 
 	model, err := a.repo.FindByID(id)
 	if err != nil {
-		return nil, errors.ErrNotFoundUser
+		return nil, err
 	}
 
 	err = model.Update(updateModel)

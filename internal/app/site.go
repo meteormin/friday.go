@@ -1,6 +1,7 @@
 package app
 
 import (
+	apperrors "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
 )
@@ -10,18 +11,37 @@ type SiteCommandService struct {
 }
 
 func (s *SiteCommandService) CreateSite(site port.CreateSite) (*domain.Site, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := site.Valid()
+	if err != nil {
+		return nil, err
+	}
+
+	if exists, err := s.repo.ExistsSiteByHost(model.Host); err != nil {
+		return nil, err
+	} else if exists {
+		return nil, apperrors.ErrDuplicateSiteHost
+	}
+
+	if exists, err := s.repo.ExistsSiteByName(model.Name); err != nil {
+		return nil, err
+	} else if exists {
+		return nil, apperrors.ErrDuplicateSiteName
+	}
+
+	return s.repo.CreateSite(model)
 }
 
 func (s *SiteCommandService) UpdateSite(id uint, site port.UpdateSite) (*domain.Site, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := site.Valid()
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repo.UpdateSite(id, model)
 }
 
 func (s *SiteCommandService) DeleteSite(id uint) error {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.DeleteSite(id)
 }
 
 func NewSiteCommandService(repo port.SiteRepository) port.SiteCommandUseCase {
@@ -35,13 +55,11 @@ type SiteQueryService struct {
 }
 
 func (s *SiteQueryService) FindSite(id uint) (*domain.Site, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.FindSite(id)
 }
 
-func (s *SiteQueryService) RetrieveSite(query string) []domain.Site {
-	//TODO implement me
-	panic("implement me")
+func (s *SiteQueryService) RetrieveSite(query string) ([]domain.Site, error) {
+	return s.repo.RetrieveSite(query)
 }
 
 func NewSiteQueryService(repo port.SiteRepository) port.SiteQueryUseCase {
