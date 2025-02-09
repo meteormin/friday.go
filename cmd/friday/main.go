@@ -59,7 +59,11 @@ func apiInfo(host string, version string, port string) {
 // @BasePath /
 // @tag.name api
 // @tag.name auth
+// @tag.name users
 // @tag.name upload-file
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg := core.GetConfig()
 
