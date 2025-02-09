@@ -6,6 +6,7 @@ type Post struct {
 	ID        uint
 	Title     string
 	Content   string
+	Path      string
 	FileID    uint
 	File      *File
 	SiteID    uint

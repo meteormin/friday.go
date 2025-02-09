@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
@@ -9,6 +10,18 @@ import (
 
 type PostRepositoryImpl struct {
 	db *gorm.DB
+}
+
+func (p *PostRepositoryImpl) ExistsPostByPath(path string) (bool, error) {
+	var ent entity.Post
+	if err := p.db.Where("path = ?", path).First(&ent).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (p *PostRepositoryImpl) CreatePost(post *domain.Post) (*domain.Post, error) {
@@ -95,6 +108,7 @@ func mapToPostEntity(post *domain.Post) entity.Post {
 	return entity.Post{
 		Title:   post.Title,
 		Content: post.Content,
+		Path:    post.Path,
 		FileID:  post.FileID,
 		SiteID:  post.SiteID,
 		Tags:    tags,
@@ -111,6 +125,7 @@ func mapToPostModel(ent entity.Post) *domain.Post {
 		ID:        ent.ID,
 		Title:     ent.Title,
 		Content:   ent.Content,
+		Path:      ent.Path,
 		FileID:    ent.FileID,
 		File:      mapToFileModel(*ent.File),
 		Tags:      tags,

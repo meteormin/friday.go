@@ -8,6 +8,7 @@ import (
 type CreatePost struct {
 	Title   string
 	Content string
+	Path    string
 	FileID  uint
 	SiteID  uint
 	Tags    []string
@@ -17,6 +18,10 @@ func (c CreatePost) Valid() (*domain.Post, error) {
 
 	if c.Title == "" {
 		return nil, errors.ErrInvalidPostTitle
+	}
+
+	if c.Path == "" {
+		return nil, errors.ErrInvalidPostPath
 	}
 
 	if c.Content == "" {
@@ -47,6 +52,7 @@ func (c CreatePost) Valid() (*domain.Post, error) {
 	return &domain.Post{
 		Title:   c.Title,
 		Content: c.Content,
+		Path:    c.Path,
 		FileID:  c.FileID,
 		SiteID:  c.SiteID,
 		Tags:    tags,
@@ -56,6 +62,7 @@ func (c CreatePost) Valid() (*domain.Post, error) {
 type UpdatePost struct {
 	Title   string
 	Content string
+	Path    string
 	FileID  uint
 	Tags    []string
 }
@@ -67,6 +74,10 @@ func (u UpdatePost) Valid() (*domain.Post, error) {
 
 	if u.Content == "" {
 		return nil, errors.ErrInvalidPostContent
+	}
+
+	if u.Path == "" {
+		return nil, errors.ErrInvalidPostPath
 	}
 
 	if u.FileID <= 0 {
@@ -89,6 +100,7 @@ func (u UpdatePost) Valid() (*domain.Post, error) {
 	return &domain.Post{
 		Title:   u.Title,
 		Content: u.Content,
+		Path:    u.Path,
 		FileID:  u.FileID,
 		Tags:    tags,
 	}, nil
@@ -107,6 +119,8 @@ type PostQueryUseCase interface {
 }
 
 type PostRepository interface {
+	ExistsPostByPath(path string) (bool, error)
+
 	CreatePost(post *domain.Post) (*domain.Post, error)
 
 	UpdatePost(id uint, post *domain.Post) (*domain.Post, error)

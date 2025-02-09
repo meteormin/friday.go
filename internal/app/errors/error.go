@@ -20,7 +20,6 @@ func NewError(code int, title, message string) *Error {
 
 // User
 var (
-	ErrNotFoundUser          = NewError(404, "NotFoundUser", "user not found")
 	ErrInvalidUserName       = NewError(400, "InvalidUserName", "invalid name")
 	ErrInvalidUserUsername   = NewError(400, "InvalidUserUsername", "invalid username")
 	ErrInvalidUserPassword   = NewError(400, "InvalidUserPassword", "invalid password")
@@ -37,7 +36,6 @@ var (
 var (
 	ErrInvalidSiteHost   = NewError(400, "InvalidSiteHost", "invalid site host")
 	ErrInvalidSiteName   = NewError(400, "InvalidSiteName", "invalid site name")
-	ErrNotFoundSite      = NewError(404, "NotFoundSite", "site not found")
 	ErrDuplicateSiteHost = NewError(409, "DuplicateSite", "site host already exists")
 	ErrDuplicateSiteName = NewError(409, "DuplicateSite", "site name already exists")
 )
@@ -49,4 +47,6 @@ var (
 	ErrInvalidPostFile    = NewError(400, "InvalidFileId", "invalid file id")
 	ErrInvalidPostSite    = NewError(400, "InvalidTags", "invalid tags")
 	ErrInvalidPostTags    = NewError(400, "InvalidTags", "invalid tags")
+	ErrInvalidPostPath    = NewError(400, "InvalidPostPath", "invalid post path")
+	ErrDuplicatePostPath  = NewError(409, "DuplicatePostPath", "post path already exists")
 )

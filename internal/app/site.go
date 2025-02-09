@@ -1,6 +1,7 @@
 package app
 
 import (
+	apperrors "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
 )
@@ -13,6 +14,18 @@ func (s *SiteCommandService) CreateSite(site port.CreateSite) (*domain.Site, err
 	model, err := site.Valid()
 	if err != nil {
 		return nil, err
+	}
+
+	if exists, err := s.repo.ExistsSiteByHost(model.Host); err != nil {
+		return nil, err
+	} else if exists {
+		return nil, apperrors.ErrDuplicateSiteHost
+	}
+
+	if exists, err := s.repo.ExistsSiteByName(model.Name); err != nil {
+		return nil, err
+	} else if exists {
+		return nil, apperrors.ErrDuplicateSiteName
 	}
 
 	return s.repo.CreateSite(model)

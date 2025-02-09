@@ -1,6 +1,7 @@
 package app
 
 import (
+	apperrors "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
 )
@@ -14,6 +15,12 @@ func (p PostCommandService) CreatePost(post port.CreatePost) (*domain.Post, erro
 
 	if err != nil {
 		return nil, err
+	}
+
+	if exists, err := p.repo.ExistsPostByPath(model.Path); err != nil {
+		return nil, err
+	} else if exists {
+		return nil, apperrors.ErrDuplicatePostPath
 	}
 
 	return p.repo.CreatePost(model)
