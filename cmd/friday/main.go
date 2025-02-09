@@ -2,17 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/swagger" // swagger handler
 	"github.com/meteormin/friday.go/api"
-	"github.com/meteormin/friday.go/internal/adapter/repo"
-	"github.com/meteormin/friday.go/internal/adapter/rest"
-	"github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/boot"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
-	"github.com/meteormin/friday.go/internal/core/http/middleware"
-	"github.com/meteormin/friday.go/internal/core/task"
 	"os"
 	"os/signal"
 	"strconv"
@@ -23,28 +16,6 @@ import (
 // init is a function that is called when the program starts.
 func init() {
 	boot.Boot()
-}
-
-// apiInfo sets the API information based on the given port.
-//
-// It takes a string parameter 'port' and does not return anything.
-func apiInfo(host string, version string, port string) {
-
-	if host == "" {
-		host = fmt.Sprintf("%s:%s", "localhost", port)
-	}
-
-	schemaHost := strings.Split(host, "://")
-	if len(schemaHost) > 1 {
-		host = schemaHost[1]
-	}
-
-	api.SwaggerInfo.Title = "Friday.go API"
-	api.SwaggerInfo.Version = version
-	api.SwaggerInfo.Schemes = []string{"http", "https"}
-	api.SwaggerInfo.Host = host
-	api.SwaggerInfo.BasePath = "/"
-	api.SwaggerInfo.SwaggerTemplate = api.OpenAPITemplate
 }
 
 // Friday.go API
@@ -80,7 +51,7 @@ func main() {
 	apiInfo(cfg.Server.Host, cfg.App.Version, strconv.Itoa(cfg.Server.Port))
 
 	// set routes
-	routes()
+	boot.RegisterRoutes()
 
 	// Listen from a different goroutine
 	go func() {
@@ -119,61 +90,24 @@ func main() {
 	}
 }
 
-func authHandler() http.AddRouteFunc {
-	userRepo := repo.NewUserRepository(core.GetDB())
-	userCommand := app.NewUserCommandService(userRepo)
-	userQuery := app.NewUserQueryService(userRepo)
-	return rest.NewAuthHandler(userCommand, userQuery)
-}
+// apiInfo sets the API information based on the given port.
+//
+// It takes a string parameter 'port' and does not return anything.
+func apiInfo(host string, version string, port string) {
 
-func userHandler() http.AddRouteFunc {
-	userRepo := repo.NewUserRepository(core.GetDB())
-	userCommand := app.NewUserCommandService(userRepo)
-	userQuery := app.NewUserQueryService(userRepo)
-	return rest.NewUserHandler(userCommand, userQuery)
-}
+	if host == "" {
+		host = fmt.Sprintf("%s:%s", "localhost", port)
+	}
 
-func uploadFileHandler() http.AddRouteFunc {
-	fileRepo := repo.NewFileRepository(core.GetDB(), "uploads")
-	fileCommand := app.NewUploadFileService(fileRepo)
-	return rest.NewUploadFileHandler(fileCommand)
-}
+	schemaHost := strings.Split(host, "://")
+	if len(schemaHost) > 1 {
+		host = schemaHost[1]
+	}
 
-func siteHandler() http.AddRouteFunc {
-	siteRepo := repo.NewSiteRepository(core.GetDB())
-	siteCommand := app.NewSiteCommandService(siteRepo)
-	siteQuery := app.NewSiteQueryService(siteRepo)
-	return rest.NewSiteHandler(siteCommand, siteQuery)
-}
-
-func postHandler() http.AddRouteFunc {
-	postRepo := repo.NewPostRepository(core.GetDB())
-	postCommand := app.NewPostCommandService(postRepo)
-	postQuery := app.NewPostQueryService(postRepo)
-	return rest.NewPostHandler(postCommand, postQuery)
-}
-
-func routes() {
-	http.Route("/api-docs", func(router fiber.Router) {
-		router.Get("/swagger/*", swagger.HandlerDefault)
-	})
-
-	http.Middleware(middleware.NewCommon, "/api")
-	http.Route("/api", func(router fiber.Router) {
-		tasks := task.Handler()
-		auth := authHandler()
-		user := userHandler()
-		uploadFile := uploadFileHandler()
-		sites := siteHandler()
-		posts := postHandler()
-
-		tasks(router)
-		auth(router)
-		middleware.NewJwtGuard(router)
-		user(router)
-		uploadFile(router)
-		sites(router)
-		posts(router)
-
-	})
+	api.SwaggerInfo.Title = "Friday.go API"
+	api.SwaggerInfo.Version = version
+	api.SwaggerInfo.Schemes = []string{"http", "https"}
+	api.SwaggerInfo.Host = host
+	api.SwaggerInfo.BasePath = "/"
+	api.SwaggerInfo.SwaggerTemplate = api.OpenAPITemplate
 }

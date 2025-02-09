@@ -7,9 +7,9 @@ import (
 	"github.com/meteormin/friday.go/internal/core/http"
 )
 
-func Handler() http.AddRouteFunc {
+func Handler(router fiber.Router) {
 	jobRepo := NewJobRepository(core.GetDB())
-	return func(router fiber.Router) {
+	jobs := func(router fiber.Router) {
 		router.Group("/tasks").
 			Get("/", func(ctx *fiber.Ctx) error {
 				jobs := jobRepo.All()
@@ -30,4 +30,6 @@ func Handler() http.AddRouteFunc {
 				return ctx.JSON(job)
 			})
 	}
+
+	jobs(router)
 }
