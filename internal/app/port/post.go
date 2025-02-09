@@ -7,12 +7,14 @@ type CreatePost struct {
 	Content string
 	FileID  uint
 	SiteID  uint
+	Tags    []string
 }
 
 type UpdatePost struct {
 	Title   string
 	Content string
 	FileID  uint
+	Tags    []string
 }
 
 type PostCommandUseCase interface {
@@ -24,7 +26,7 @@ type PostCommandUseCase interface {
 type PostQueryUseCase interface {
 	FindPost(id uint) (*domain.Post, error)
 
-	RetrievePosts(query string) []domain.Post
+	RetrievePosts(query string) ([]domain.Post, error)
 }
 
 type PostRepository interface {
@@ -36,5 +38,5 @@ type PostRepository interface {
 
 	FindPost(id uint) (*domain.Post, error)
 
-	RetrievePosts(query string) []domain.Post
+	RetrievePosts(query string) ([]domain.Post, error)
 }

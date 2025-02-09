@@ -10,7 +10,7 @@ type Post struct {
 	File    *File
 	SiteID  uint
 	Site    *Site
-	Tag     []Tag
+	Tags    []Tag
 }
 
 type Tag struct {

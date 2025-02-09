@@ -2,7 +2,7 @@ package domain
 
 type CashHash map[string]*Set[uint]
 
-var cacheHash = make(map[string]*Set[uint])
+var cacheHash = make(CashHash)
 
 func GetCache() CashHash {
 	return cacheHash

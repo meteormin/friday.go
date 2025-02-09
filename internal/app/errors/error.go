@@ -20,14 +20,24 @@ func NewError(code int, title, message string) *Error {
 
 // User
 var (
-	ErrNotFoundUser        = NewError(404, "NotFoundUser", "user not found")
-	ErrInvalidUserName     = NewError(400, "InvalidUserName", "invalid name")
-	ErrInvalidUserUsername = NewError(400, "InvalidUserUsername", "invalid username")
-	ErrInvalidUserPassword = NewError(400, "InvalidUserPassword", "invalid password")
+	ErrNotFoundUser          = NewError(404, "NotFoundUser", "user not found")
+	ErrInvalidUserName       = NewError(400, "InvalidUserName", "invalid name")
+	ErrInvalidUserUsername   = NewError(400, "InvalidUserUsername", "invalid username")
+	ErrInvalidUserPassword   = NewError(400, "InvalidUserPassword", "invalid password")
+	ErrDuplicateUserUsername = NewError(409, "DuplicateUser", "username already exists")
 )
 
 // File
 var (
 	ErrInvalidFileName = NewError(400, "InvalidFileName", "invalid file name")
 	ErrInvalidFile     = NewError(400, "InvalidFile", "invalid file")
+)
+
+// Site
+var (
+	ErrInvalidSiteHost   = NewError(400, "InvalidSiteHost", "invalid site host")
+	ErrInvalidSiteName   = NewError(400, "InvalidSiteName", "invalid site name")
+	ErrNotFoundSite      = NewError(404, "NotFoundSite", "site not found")
+	ErrDuplicateSiteHost = NewError(409, "DuplicateSite", "site host already exists")
+	ErrDuplicateSiteName = NewError(409, "DuplicateSite", "site name already exists")
 )

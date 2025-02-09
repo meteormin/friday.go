@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Post struct {
 	ID        uint
 	Title     string
@@ -8,15 +10,16 @@ type Post struct {
 	File      *File
 	SiteID    uint
 	Site      *Site
-	Tag       []Tag
-	CreatedAt string
-	UpdatedAt string
+	Tags      []Tag
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Site struct {
 	ID    uint
 	Host  string
-	Alias string
+	Name  string
+	Posts []Post
 }
 
 type Tag struct {

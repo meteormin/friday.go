@@ -27,3 +27,21 @@ func (p PostCommandService) DeletePost(id uint) error {
 func NewPostCommandService(repo port.PostRepository) port.PostCommandUseCase {
 	return &PostCommandService{repo: repo}
 }
+
+type PostQueryService struct {
+	repo port.PostRepository
+}
+
+func (p PostQueryService) FindPost(id uint) (*domain.Post, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p PostQueryService) RetrievePosts(query string) ([]domain.Post, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func NewPostQueryService(repo port.PostRepository) port.PostQueryUseCase {
+	return &PostQueryService{repo: repo}
+}
