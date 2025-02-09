@@ -36,16 +36,16 @@ func (s SiteRepositoryImpl) ExistsSiteByName(name string) (bool, error) {
 	return true, nil
 }
 
-func (s SiteRepositoryImpl) CreateSite(site domain.Site) (*domain.Site, error) {
+func (s SiteRepositoryImpl) CreateSite(site *domain.Site) (*domain.Site, error) {
 	ent := mapToSiteEntity(site)
 	if err := s.db.Create(&ent).Error; err != nil {
 		return nil, err
 	}
 
-	return &site, nil
+	return mapToSiteModel(ent), nil
 }
 
-func (s SiteRepositoryImpl) UpdateSite(id uint, site domain.Site) (*domain.Site, error) {
+func (s SiteRepositoryImpl) UpdateSite(id uint, site *domain.Site) (*domain.Site, error) {
 	var ent entity.Site
 
 	if err := s.db.First(&ent, id).Error; err != nil {
@@ -58,7 +58,7 @@ func (s SiteRepositoryImpl) UpdateSite(id uint, site domain.Site) (*domain.Site,
 		return nil, err
 	}
 
-	return &site, nil
+	return mapToSiteModel(ent), nil
 }
 
 func (s SiteRepositoryImpl) DeleteSite(id uint) error {
@@ -122,7 +122,7 @@ func mapToSiteModel(ent entity.Site) *domain.Site {
 	}
 }
 
-func mapToSiteEntity(site domain.Site) entity.Site {
+func mapToSiteEntity(site *domain.Site) entity.Site {
 	return entity.Site{
 		Name: site.Name,
 		Host: site.Host,

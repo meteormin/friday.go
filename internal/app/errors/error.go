@@ -41,3 +41,12 @@ var (
 	ErrDuplicateSiteHost = NewError(409, "DuplicateSite", "site host already exists")
 	ErrDuplicateSiteName = NewError(409, "DuplicateSite", "site name already exists")
 )
+
+// Post
+var (
+	ErrInvalidPostTitle   = NewError(400, "InvalidPostTitle", "invalid post title")
+	ErrInvalidPostContent = NewError(400, "InvalidPostContent", "invalid post content")
+	ErrInvalidPostFile    = NewError(400, "InvalidFileId", "invalid file id")
+	ErrInvalidPostSite    = NewError(400, "InvalidTags", "invalid tags")
+	ErrInvalidPostTags    = NewError(400, "InvalidTags", "invalid tags")
+)

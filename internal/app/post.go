@@ -10,18 +10,27 @@ type PostCommandService struct {
 }
 
 func (p PostCommandService) CreatePost(post port.CreatePost) (*domain.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := post.Valid()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return p.repo.CreatePost(model)
 }
 
 func (p PostCommandService) UpdatePost(id uint, post port.UpdatePost) (*domain.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	model, err := post.Valid()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return p.repo.UpdatePost(id, model)
 }
 
 func (p PostCommandService) DeletePost(id uint) error {
-	//TODO implement me
-	panic("implement me")
+	return p.repo.DeletePost(id)
 }
 
 func NewPostCommandService(repo port.PostRepository) port.PostCommandUseCase {
@@ -33,13 +42,11 @@ type PostQueryService struct {
 }
 
 func (p PostQueryService) FindPost(id uint) (*domain.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	return p.repo.FindPost(id)
 }
 
 func (p PostQueryService) RetrievePosts(query string) ([]domain.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	return p.repo.RetrievePosts(query)
 }
 
 func NewPostQueryService(repo port.PostRepository) port.PostQueryUseCase {

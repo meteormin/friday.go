@@ -56,9 +56,9 @@ type SiteRepository interface {
 
 	ExistsSiteByName(name string) (bool, error)
 
-	CreateSite(site domain.Site) (*domain.Site, error)
+	CreateSite(site *domain.Site) (*domain.Site, error)
 
-	UpdateSite(id uint, site domain.Site) (*domain.Site, error)
+	UpdateSite(id uint, site *domain.Site) (*domain.Site, error)
 
 	DeleteSite(id uint) error
 

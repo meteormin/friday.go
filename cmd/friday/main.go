@@ -161,6 +161,7 @@ func routes() {
 		user := userHandler()
 		uploadFile := uploadFileHandler()
 		sites := siteHandler()
+		posts := postHandler()
 
 		tasks(router)
 		auth(router)
@@ -168,6 +169,7 @@ func routes() {
 		user(router)
 		uploadFile(router)
 		sites(router)
+		posts(router)
 
 	})
 }

@@ -1,6 +1,9 @@
 package port
 
-import "github.com/meteormin/friday.go/internal/domain"
+import (
+	"github.com/meteormin/friday.go/internal/app/errors"
+	"github.com/meteormin/friday.go/internal/domain"
+)
 
 type CreatePost struct {
 	Title   string
@@ -10,11 +13,85 @@ type CreatePost struct {
 	Tags    []string
 }
 
+func (c CreatePost) Valid() (*domain.Post, error) {
+
+	if c.Title == "" {
+		return nil, errors.ErrInvalidPostTitle
+	}
+
+	if c.Content == "" {
+		return nil, errors.ErrInvalidPostContent
+	}
+
+	if c.FileID <= 0 {
+		return nil, errors.ErrInvalidPostFile
+	}
+
+	if c.SiteID <= 0 {
+		return nil, errors.ErrInvalidPostSite
+	}
+
+	tags := make([]domain.Tag, 0)
+	if len(c.Tags) != 0 {
+		for _, tag := range c.Tags {
+			if tag == "" {
+				return nil, errors.ErrInvalidPostTags
+			}
+
+			tags = append(tags, domain.Tag{
+				Tag: tag,
+			})
+		}
+	}
+
+	return &domain.Post{
+		Title:   c.Title,
+		Content: c.Content,
+		FileID:  c.FileID,
+		SiteID:  c.SiteID,
+		Tags:    tags,
+	}, nil
+}
+
 type UpdatePost struct {
 	Title   string
 	Content string
 	FileID  uint
 	Tags    []string
+}
+
+func (u UpdatePost) Valid() (*domain.Post, error) {
+	if u.Title == "" {
+		return nil, errors.ErrInvalidPostTitle
+	}
+
+	if u.Content == "" {
+		return nil, errors.ErrInvalidPostContent
+	}
+
+	if u.FileID <= 0 {
+		return nil, errors.ErrInvalidPostFile
+	}
+
+	tags := make([]domain.Tag, 0)
+	if len(u.Tags) != 0 {
+		for _, tag := range u.Tags {
+			if tag == "" {
+				return nil, errors.ErrInvalidPostTags
+			}
+
+			tags = append(tags, domain.Tag{
+				Tag: tag,
+			})
+		}
+	}
+
+	return &domain.Post{
+		Title:   u.Title,
+		Content: u.Content,
+		FileID:  u.FileID,
+		Tags:    tags,
+	}, nil
 }
 
 type PostCommandUseCase interface {
@@ -30,9 +107,9 @@ type PostQueryUseCase interface {
 }
 
 type PostRepository interface {
-	CreatePost(post domain.Post) (*domain.Post, error)
+	CreatePost(post *domain.Post) (*domain.Post, error)
 
-	UpdatePost(id uint, post domain.Post) (*domain.Post, error)
+	UpdatePost(id uint, post *domain.Post) (*domain.Post, error)
 
 	DeletePost(id uint) error
 
