@@ -29,6 +29,37 @@ help: Makefile
 run:
 	go run ./cmd/$(mod)/main.go
 
+SWAG_OUTPUT=./docs
+
+##swag mod={entrypoint [friday]}: generate swagger docs
+##: - output directory is `./docs`
+.PHONY: swag
+swag:
+	swag init --parseDependency --parseInternal -g cmd/$(mod)/main.go --output api
+
+WORKER_IMAGE=golang:1.22-alpine
+OAS3_GENERATOR_DOCKER_IMAGE=openapitools/openapi-generator-cli:latest-release
+
+##openapi3 mod={entrypoint [friday]}: Generate OAS3 from swaggo/swag output since that project doesn't support it
+##: TODO. Remove this if V3 spec is ever returned from that project
+.PHONY: openapi3
+openapi3: swag
+	@echo "[OAS3] Converting Swagger 2-to-3 (yaml)"
+	@docker run --rm -v $(PWD)/api:/work $(OAS3_GENERATOR_DOCKER_IMAGE) \
+	  generate -i /work/swagger.yaml -o /work/v3 -g openapi-yaml --minimal-update
+	@docker run --rm -v $(PWD)/api/v3:/work $(WORKER_IMAGE) \
+	  sh -c "rm -rf /work/.openapi-generator"
+	@echo "[OAS3] Copying openapi-generator-ignore (json)"
+	@docker run --rm -v $(PWD)/api/v3:/work $(WORKER_IMAGE) \
+	  sh -c "cp -f /work/.openapi-generator-ignore /work/openapi"
+	@echo "[OAS3] Converting Swagger 2-to-3 (json)"
+	@docker run --rm -v $(PWD)/api:/work $(OAS3_GENERATOR_DOCKER_IMAGE) \
+	  generate -s -i /work/swagger.json -o /work/v3/openapi -g openapi --minimal-update
+	@echo "[OAS3] Cleaning up generated files"
+	@docker run --rm -v $(PWD)/api/v3:/work $(WORKER_IMAGE) \
+	  sh -c "mv -f /work/openapi/openapi.json /work ; mv -f /work/openapi/openapi.yaml /work ; rm -rf /work/openapi"
+
+
 
 # OS와 ARCH가 정의되어 있지 않으면 기본값을 설정합니다.
 # uname -s는 OS 이름(예: Linux, Darwin 등)을 반환하고, tr를 통해 소문자로 변환합니다.

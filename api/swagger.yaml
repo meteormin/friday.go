@@ -1,0 +1,19 @@
+basePath: /
+host: '{{.Host}}'
+info:
+  contact:
+    email: miniyu97@gmail.com
+    name: meteormin
+    url: https://github.com/meteormin/friday.go
+  description: Friday.go API
+  title: Friday.go API
+  version: '{{.Version}}'
+paths: {}
+schemes:
+- http
+- https
+swagger: "2.0"
+tags:
+- name: api
+- name: auth
+- name: upload-file

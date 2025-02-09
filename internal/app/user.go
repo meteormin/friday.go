@@ -16,6 +16,10 @@ func (a *UserCommandService) CreateUser(user port.CreateUser) (*domain.User, err
 		return nil, err
 	}
 
+	if a.repo.ExistsByUsername(model.Username) {
+		return nil, errors.ErrDuplicateUserUsername
+	}
+
 	err = model.HashPassword()
 	if err != nil {
 		return nil, err
