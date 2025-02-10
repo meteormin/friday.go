@@ -55,6 +55,230 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts": {
+            "get": {
+                "description": "포스트 리스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 리스트 조회",
+                "operationId": "posts.retrieve",
+                "responses": {
+                    "200": {
+                        "description": "포스트 리스트 조회 성공",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "포스트 생성 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 생성",
+                "operationId": "posts.create",
+                "parameters": [
+                    {
+                        "description": "포스트 생성 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.CreatePostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "포스트 생성 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "이메일 중복",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "description": "포스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 조회",
+                "operationId": "posts.find",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "포스트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "포스트 조회 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "포스트 수정 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 수정",
+                "operationId": "posts.update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "포스트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "포스트 수정 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UpdatePostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "포스트 수정 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "포스트 삭제 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 삭제",
+                "operationId": "posts.delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "포스트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "포스트 삭제 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                        }
+                    },
+                    "404": {
+                        "description": "존재하지 않는 포스트",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/sign-in": {
             "post": {
                 "description": "회원 로그인 API",
@@ -210,6 +434,59 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_adapter_rest.CreatePostRequest": {
+            "description": "생성 요청",
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "fileId": {
+                    "type": "integer"
+                },
+                "siteId": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_adapter_rest.PostResource": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_adapter_rest.SignInRequest": {
             "description": "로그인 요청",
             "type": "object",
@@ -245,6 +522,26 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_adapter_rest.UpdatePostRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "fileId": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
                     "type": "string"
                 }
             }
@@ -287,6 +584,9 @@ const docTemplate = `{
         },
         {
             "name": "upload-file"
+        },
+        {
+            "name": "posts"
         }
     ]
 }`

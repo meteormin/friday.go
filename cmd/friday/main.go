@@ -32,6 +32,7 @@ func init() {
 // @tag.name auth
 // @tag.name users
 // @tag.name upload-file
+// @tag.name posts
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization

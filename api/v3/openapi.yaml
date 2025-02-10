@@ -15,6 +15,7 @@ tags:
 - name: auth
 - name: users
 - name: upload-file
+- name: posts
 paths:
   /me:
     get:
@@ -42,6 +43,172 @@ paths:
       summary: 회원 정보 조회
       tags:
       - auth
+  /posts:
+    get:
+      description: 포스트 리스트 조회 API
+      operationId: posts.retrieve
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                type: array
+          description: 포스트 리스트 조회 성공
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 리스트 조회
+      tags:
+      - posts
+    post:
+      description: 포스트 생성 API
+      operationId: posts.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/internal_adapter_rest.CreatePostRequest'
+        description: 포스트 생성 정보
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+          description: 포스트 생성 성공
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 잘못된 요청
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 이메일 중복
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 생성
+      tags:
+      - posts
+      x-codegen-request-body-name: req
+  /posts/{id}:
+    delete:
+      description: 포스트 삭제 API
+      operationId: posts.delete
+      parameters:
+      - description: 포스트 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+          description: 포스트 삭제 성공
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 존재하지 않는 포스트
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 삭제
+      tags:
+      - posts
+    get:
+      description: 포스트 조회 API
+      operationId: posts.find
+      parameters:
+      - description: 포스트 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+          description: 포스트 조회 성공
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 잘못된 요청
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 조회
+      tags:
+      - posts
+    put:
+      description: 포스트 수정 API
+      operationId: posts.update
+      parameters:
+      - description: 포스트 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/internal_adapter_rest.UpdatePostRequest'
+        description: 포스트 수정 정보
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+          description: 포스트 수정 성공
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 잘못된 요청
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 수정
+      tags:
+      - posts
+      x-codegen-request-body-name: req
   /sign-in:
     post:
       description: 회원 로그인 API
@@ -159,6 +326,51 @@ components:
         title:
           type: string
       type: object
+    internal_adapter_rest.CreatePostRequest:
+      description: 생성 요청
+      properties:
+        content:
+          type: string
+        fileId:
+          type: integer
+        siteId:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+      type: object
+    internal_adapter_rest.PostResource:
+      example:
+        updated_at: updated_at
+        created_at: created_at
+        id: 0
+        title: title
+        uri: uri
+        content: content
+        tags:
+        - tags
+        - tags
+      properties:
+        content:
+          type: string
+        created_at:
+          type: string
+        id:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+        updated_at:
+          type: string
+        uri:
+          type: string
+      type: object
     internal_adapter_rest.SignInRequest:
       description: 로그인 요청
       properties:
@@ -186,6 +398,19 @@ components:
         exp:
           type: integer
         token:
+          type: string
+      type: object
+    internal_adapter_rest.UpdatePostRequest:
+      properties:
+        content:
+          type: string
+        fileId:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        title:
           type: string
       type: object
     internal_adapter_rest.UserResource:
