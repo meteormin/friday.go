@@ -9,6 +9,15 @@ RUN apk --no-cache add tzdata && \
 	echo "${TIME_ZONE}" > /etc/timezone \
 	apk del tzdata
 
+
+FROM node:22.13-alpine AS ui
+
+WORKDIR /app
+
+COPY ui .
+
+RUN yarn install && yarn build
+
 FROM golang:1.23-alpine AS build
 
 RUN apk add --no-cache make gcc musl-dev
@@ -19,16 +28,19 @@ WORKDIR /app
 
 COPY . .
 
+COPY --from=ui /app/dist ./ui/dist
+
 RUN go mod download && go build ./cmd/$MOD/main.go
 
 FROM base AS  deploy
 
 WORKDIR /app
 
-COPY --from=build /app .
+COPY --from=build /app/main .
+COPY --from=build /app/config.yml .
 
-COPY config.yml .
+RUN mkdir -p /app/data
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "./main -port=8080"]
+ENTRYPOINT ["sh", "-c", "./main"]

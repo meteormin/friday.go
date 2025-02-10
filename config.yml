@@ -1,4 +1,5 @@
 env: dev
+tz: Asia/Seoul
 app:
   name: Friday.go
   version: 0.0.1
@@ -25,5 +26,5 @@ scheduler:
   name: friday
 path:
   data: ./data
-  logs: ./logs
+  log: ./logs
   secret: ./data/secret

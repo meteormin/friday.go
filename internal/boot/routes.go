@@ -56,7 +56,7 @@ func RegisterRoutes() {
 		router.Get("/swagger/*", swagger.HandlerDefault)
 	})
 
-	http.Middleware(middleware.NewCommon, "/api")
+	http.Middleware(middleware.NewCommon)
 	http.Route("/api", func(router fiber.Router) {
 		task.Handler(router)
 		authHandler(router)
@@ -66,4 +66,6 @@ func RegisterRoutes() {
 		siteHandler(router)
 		postHandler(router)
 	})
+
+	http.Middleware(middleware.EmbedUI)
 }
