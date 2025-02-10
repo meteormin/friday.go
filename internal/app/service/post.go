@@ -1,4 +1,4 @@
-package app
+package service
 
 import (
 	apperrors "github.com/meteormin/friday.go/internal/app/errors"

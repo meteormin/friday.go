@@ -1,4 +1,52 @@
 basePath: /
+definitions:
+  github_com_meteormin_friday_go_internal_app_errors.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      title:
+        type: string
+    type: object
+  internal_adapter_rest.SignInRequest:
+    description: 로그인 요청
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_adapter_rest.SignupRequest:
+    description: 가입 요청
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_adapter_rest.TokenResource:
+    description: 토큰 정보 리소스
+    properties:
+      exp:
+        type: integer
+      token:
+        type: string
+    type: object
+  internal_adapter_rest.UserResource:
+    description: 회원 정보 리소스
+    properties:
+      createdAt:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
 host: '{{.Host}}'
 info:
   contact:
@@ -8,12 +56,134 @@ info:
   description: Friday.go API
   title: Friday.go API
   version: '{{.Version}}'
-paths: {}
+paths:
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: 회원 정보 조회 API
+      operationId: me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 정보 조회 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.UserResource'
+        "401":
+          description: 로그인 정보 없음
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 정보 조회
+      tags:
+      - auth
+  /sign-in:
+    post:
+      consumes:
+      - application/json
+      description: 회원 로그인 API
+      operationId: sign-in
+      parameters:
+      - description: 회원 로그인 정보
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapter_rest.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 로그인 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.TokenResource'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "401":
+          description: 로그인 실험
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 로그인
+      tags:
+      - auth
+  /sign-up:
+    post:
+      consumes:
+      - application/json
+      description: 회원 가입 API
+      operationId: sign-up
+      parameters:
+      - description: 회원 가입 정보
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapter_rest.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 회원 가입 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.UserResource'
+        "400":
+          description: 잘못된 요청" errors.ErrInvalidUserPassword
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "409":
+          description: 이메일 중복" errors.ErrDuplicateUserUsername
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 가입
+      tags:
+      - auth
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: 회원 리스트 조회 API
+      operationId: users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 리스트 조회 성공
+          schema:
+            items:
+              $ref: '#/definitions/internal_adapter_rest.UserResource'
+            type: array
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 리스트 조회
+      tags:
+      - users
 schemes:
 - http
 - https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
 tags:
 - name: api
 - name: auth
+- name: users
 - name: upload-file

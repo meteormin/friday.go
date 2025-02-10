@@ -6,9 +6,9 @@ import (
 )
 
 type BadgerConfig struct {
-	Path       string `yaml:"path"`
-	CacheSize  int64  `yaml:"cacheSize"`
-	EncryptKey []byte `yaml:"encryptKey"`
+	Path       string `json:"path" yaml:"path"`
+	CacheSize  int64  `json:"cacheSize" yaml:"cacheSize"`
+	EncryptKey []byte `json:"encryptKey" yaml:"encryptKey"`
 }
 
 func NewBadger(cfg BadgerConfig) (*badger.DB, error) {

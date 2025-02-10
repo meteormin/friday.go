@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/meteormin/friday.go/internal/core"
+	config2 "github.com/meteormin/friday.go/internal/core/config"
 	"github.com/meteormin/friday.go/internal/core/db"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"github.com/meteormin/friday.go/internal/core/task"
-	"github.com/meteormin/friday.go/pkg/config"
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
 	"github.com/meteormin/friday.go/pkg/scheduler"
@@ -23,7 +23,7 @@ const (
 )
 
 func Boot() {
-	cfg := config.LoadWithViper("config.yml", config.App{
+	cfg := config2.LoadWithViper("config.yml", config2.App{
 		Name:    appName,
 		Version: appVersion,
 	})

@@ -3,7 +3,7 @@ package core
 import (
 	"github.com/dgraph-io/badger/v4"
 	"github.com/go-co-op/gocron/v2"
-	"github.com/meteormin/friday.go/pkg/config"
+	"github.com/meteormin/friday.go/internal/core/config"
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
 	"github.com/meteormin/friday.go/pkg/scheduler"

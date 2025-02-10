@@ -10,8 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/meteormin/friday.go/internal/core"
+	"github.com/meteormin/friday.go/internal/core/config"
 	"github.com/meteormin/friday.go/internal/core/http"
-	"github.com/meteormin/friday.go/pkg/config"
 	"time"
 )
 import "github.com/gofiber/fiber/v2/middleware/cors"
@@ -29,6 +29,7 @@ func NewCommon(router fiber.Router) {
 		router.Use("/routes", func(ctx *fiber.Ctx) error {
 			return ctx.JSON(http.Fiber().GetRoutes())
 		})
+		router.Use("/configs", func(ctx *fiber.Ctx) error { return ctx.JSON(core.GetConfig()) })
 	}
 
 	router.Use(cache.New(cache.Config{
