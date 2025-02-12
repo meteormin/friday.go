@@ -1,20 +1,37 @@
 import {BrowserRouter, Route, Routes} from "react-router";
+import {Navigate} from "react-router-dom";
 import * as React from "react";
-import SignIn from "./pages/sign-in/SignIn.tsx";
+import SignIn from "./pages/sign-in/SignIn";
+import SignUp from "./pages/sign-up/SignUp";
 
 interface RouteProps {
     path: string,
     element: React.ReactNode
 }
 
+function Guard({children}: { children: React.ReactNode }) {
+    const token = localStorage.getItem("token")
+    if (token) {
+        return children;
+    } else {
+        return <Navigate to="/sign-in" replace/>
+    }
+}
+
 const routes: RouteProps[] = [
     {
         path: "/",
-        element: <div>Home</div>
+        element: <Guard>
+            <div>Home</div>
+        </Guard>
     },
     {
         path: "/sign-in",
         element: <SignIn/>
+    },
+    {
+        path: "/sign-up",
+        element: <SignUp/>
     }
 ]
 
