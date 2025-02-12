@@ -482,6 +482,28 @@ paths:
       summary: 파일 업로드
       tags:
       - upload-file
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: 회원 리스트 조회 API
+      operationId: users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 리스트 조회 성공
+          schema:
+            items:
+              $ref: '#/definitions/internal_adapter_rest.UserResource'
+            type: array
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 리스트 조회
+      tags:
+      - users
   /auth/me:
     get:
       consumes:
@@ -576,28 +598,6 @@ paths:
       summary: 회원 가입
       tags:
       - auth
-  /users:
-    get:
-      consumes:
-      - application/json
-      description: 회원 리스트 조회 API
-      operationId: users
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 회원 리스트 조회 성공
-          schema:
-            items:
-              $ref: '#/definitions/internal_adapter_rest.UserResource'
-            type: array
-        "500":
-          description: 서버 오류
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-      summary: 회원 리스트 조회
-      tags:
-      - users
 schemes:
 - http
 - https

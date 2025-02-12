@@ -539,6 +539,39 @@
                 }
             }
         },
+        "/api/users": {
+            "get": {
+                "description": "회원 리스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "회원 리스트 조회",
+                "operationId": "users",
+                "responses": {
+                    "200": {
+                        "description": "회원 리스트 조회 성공",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/me": {
             "get": {
                 "description": "회원 정보 조회 API",
@@ -670,39 +703,6 @@
                         "description": "이메일 중복\" errors.ErrDuplicateUserUsername",
                         "schema": {
                             "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/users": {
-            "get": {
-                "description": "회원 리스트 조회 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "회원 리스트 조회",
-                "operationId": "users",
-                "responses": {
-                    "200": {
-                        "description": "회원 리스트 조회 성공",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_adapter_rest.UserResource"
-                            }
                         }
                     },
                     "500": {

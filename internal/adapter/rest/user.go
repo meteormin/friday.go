@@ -192,7 +192,7 @@ type UserHandler struct {
 // @Produce json
 // @Success 200 {array} UserResource "회원 리스트 조회 성공"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /users [get]
+// @Router /api/users [get]
 // @Tags users
 func (handler *UserHandler) fetchUsers(ctx *fiber.Ctx) error {
 	users := handler.query.FetchUsers()
