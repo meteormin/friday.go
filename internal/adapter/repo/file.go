@@ -16,12 +16,12 @@ type FileRepositoryImpl struct {
 }
 
 func (f FileRepositoryImpl) CreateFile(file *domain.File, data []byte) (*domain.File, error) {
-	ent := mapToFileEntity(file)
-
-	err := database.PutFile(f.storage, ent.ConvFilename, data)
+	err := database.PutFile(f.storage, file.ConvName, data)
 	if err != nil {
 		return nil, err
 	}
+
+	ent := mapToFileEntity(file)
 
 	f.db.Create(&ent)
 	return mapToFileModel(ent), nil
