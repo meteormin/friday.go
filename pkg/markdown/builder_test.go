@@ -1,7 +1,12 @@
 package markdown
 
 import (
+	"bytes"
 	"github.com/meteormin/friday.go/pkg/markdown/component"
+	"github.com/stretchr/testify/assert"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 	"reflect"
 	"testing"
 )
@@ -222,4 +227,32 @@ func TestBuilder_Table(t *testing.T) {
 	b.Append(table)
 
 	t.Log("\n" + b.String())
+}
+
+func TestMdToHtml(t *testing.T) {
+	b := &Builder{
+		components: []component.Component{},
+	}
+
+	table := component.NewTable()
+	table.Header([]string{"ID", "Name", "Age", "Address"})
+	table.Append([]string{"1", "Alice", "20", "New York"})
+	table.Append([]string{"2", "Bob", "25", "Los Angeles"})
+	table.Append([]string{"3", "Charlie", "30", "Chicago"})
+	table.Append([]string{"4", "David", "35", "Houston"})
+	table.Append([]string{"5", "Eve", "40", "Philadelphia"})
+
+	b.Append(component.NewHeader(0, "Table"))
+	b.Append(table)
+
+	var buf bytes.Buffer
+	md := goldmark.New(
+		goldmark.WithExtensions(extension.Table),
+		goldmark.WithParserOptions(parser.WithAutoHeadingID()),
+	)
+
+	err := md.Convert([]byte(b.String()), &buf)
+	assert.Nil(t, err)
+
+	t.Log("\n" + buf.String())
 }

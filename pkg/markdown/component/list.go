@@ -21,7 +21,7 @@ func (l *List) string(tab, bullet string) string {
 		if li, ok := item.(*List); ok {
 			sb.WriteString(li.String())
 		} else {
-			for i := 1; i <= l.level; i++ {
+			for i := 0; i < l.level; i++ {
 				sb.WriteString(tab)
 			}
 			sb.WriteString(bullet)

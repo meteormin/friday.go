@@ -9,6 +9,7 @@ func NewHeader(level int, str string) *Header {
 		Text: NewText(),
 	}
 
+	h.WriteString("#")
 	for i := 0; i < level; i++ {
 		h.WriteString("#")
 	}
