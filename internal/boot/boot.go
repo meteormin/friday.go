@@ -77,7 +77,7 @@ func Boot() {
 		CaseSensitive:     true,
 		AppName:           appName + " v" + appVersion,
 		ErrorHandler:      http.NewErrorHandler(),
-		EnablePrintRoutes: true,
+		EnablePrintRoutes: cfg.Env != config.Release,
 	})
 }
 

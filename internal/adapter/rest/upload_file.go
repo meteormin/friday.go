@@ -29,7 +29,7 @@ type UploadFileHandler struct {
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 500 {object} errors.Error "서버 오류"
 // @Router /api/upload-file [post]
-// @Tags files
+// @Tags upload-file
 func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 
 	uploadFile, err := ctx.FormFile("file")

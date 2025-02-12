@@ -45,12 +45,14 @@ func NewCommon(router fiber.Router) {
 			envUrl, _ := url.JoinPath(host, "expose/envvars")
 			metricsUrl, _ := url.JoinPath(host, "metrics")
 			routesUrl, _ := url.JoinPath(host, "routes")
+			swaggerUrl, _ := url.JoinPath(host, "api-docs/swagger")
 
 			return ctx.JSON(fiber.Map{
-				"configs": cfgUrl,
-				"env":     envUrl,
-				"metrics": metricsUrl,
-				"routes":  routesUrl,
+				"configs":    cfgUrl,
+				"env":        envUrl,
+				"metrics":    metricsUrl,
+				"routes":     routesUrl,
+				"swagger-ui": swaggerUrl,
 			})
 		})
 

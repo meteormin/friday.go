@@ -133,36 +133,6 @@ info:
   title: Friday.go API
   version: '{{.Version}}'
 paths:
-  /api/api/posts/{id}:
-    get:
-      consumes:
-      - application/json
-      description: 포스트 조회 API
-      operationId: posts.find
-      parameters:
-      - description: 포스트 ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 포스트 조회 성공
-          schema:
-            $ref: '#/definitions/internal_adapter_rest.PostResource'
-        "400":
-          description: 잘못된 요청
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "500":
-          description: 서버 오류
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-      summary: 포스트 조회
-      tags:
-      - posts
   /api/posts:
     get:
       consumes:
@@ -247,6 +217,35 @@ paths:
           schema:
             $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
       summary: 포스트 삭제
+      tags:
+      - posts
+    get:
+      consumes:
+      - application/json
+      description: 포스트 조회 API
+      operationId: posts.find
+      parameters:
+      - description: 포스트 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 포스트 조회 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.PostResource'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 포스트 조회
       tags:
       - posts
     put:
@@ -482,8 +481,8 @@ paths:
             $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
       summary: 파일 업로드
       tags:
-      - files
-  /me:
+      - upload-file
+  /auth/me:
     get:
       consumes:
       - application/json
@@ -507,7 +506,7 @@ paths:
       summary: 회원 정보 조회
       tags:
       - auth
-  /sign-in:
+  /auth/sign-in:
     post:
       consumes:
       - application/json
@@ -542,7 +541,7 @@ paths:
       summary: 회원 로그인
       tags:
       - auth
-  /sign-up:
+  /auth/sign-up:
     post:
       consumes:
       - application/json
@@ -609,7 +608,6 @@ securityDefinitions:
     type: apiKey
 swagger: "2.0"
 tags:
-- name: api
 - name: auth
 - name: users
 - name: upload-file

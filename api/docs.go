@@ -19,51 +19,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/api/posts/{id}": {
-            "get": {
-                "description": "포스트 조회 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts"
-                ],
-                "summary": "포스트 조회",
-                "operationId": "posts.find",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "포스트 ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "포스트 조회 성공",
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
-                        }
-                    },
-                    "400": {
-                        "description": "잘못된 요청",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/api/posts": {
             "get": {
                 "description": "포스트 리스트 조회 API",
@@ -149,6 +104,49 @@ const docTemplate = `{
             }
         },
         "/api/posts/{id}": {
+            "get": {
+                "description": "포스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "포스트 조회",
+                "operationId": "posts.find",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "포스트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "포스트 조회 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "포스트 수정 API",
                 "consumes": [
@@ -508,7 +506,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "upload-file"
                 ],
                 "summary": "파일 업로드",
                 "operationId": "files.upload",
@@ -543,7 +541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/me": {
+        "/auth/me": {
             "get": {
                 "description": "회원 정보 조회 API",
                 "consumes": [
@@ -579,7 +577,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/sign-in": {
+        "/auth/sign-in": {
             "post": {
                 "description": "회원 로그인 API",
                 "consumes": [
@@ -632,7 +630,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/sign-up": {
+        "/auth/sign-up": {
             "post": {
                 "description": "회원 가입 API",
                 "consumes": [
@@ -917,9 +915,6 @@ const docTemplate = `{
         }
     },
     "tags": [
-        {
-            "name": "api"
-        },
         {
             "name": "auth"
         },

@@ -68,7 +68,7 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Success 200 {object} PostResource "포스트 조회 성공"
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /api/api/posts/{id} [get]
+// @Router /api/posts/{id} [get]
 // @Tags posts
 func (h PostHandler) Find(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))

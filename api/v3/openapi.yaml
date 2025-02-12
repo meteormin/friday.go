@@ -11,45 +11,11 @@ servers:
 - url: "http://{{.Host}}/"
 - url: "https://{{.Host}}/"
 tags:
-- name: api
 - name: auth
 - name: users
 - name: upload-file
 - name: posts
 paths:
-  /api/api/posts/{id}:
-    get:
-      description: 포스트 조회 API
-      operationId: posts.find
-      parameters:
-      - description: 포스트 ID
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
-          description: 포스트 조회 성공
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
-          description: 잘못된 요청
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
-          description: 서버 오류
-      summary: 포스트 조회
-      tags:
-      - posts
   /api/posts:
     get:
       description: 포스트 리스트 조회 API
@@ -142,6 +108,38 @@ paths:
                 $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
           description: 서버 오류
       summary: 포스트 삭제
+      tags:
+      - posts
+    get:
+      description: 포스트 조회 API
+      operationId: posts.find
+      parameters:
+      - description: 포스트 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+          description: 포스트 조회 성공
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 잘못된 요청
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+          description: 서버 오류
+      summary: 포스트 조회
       tags:
       - posts
     put:
@@ -407,8 +405,8 @@ paths:
           description: 서버 오류
       summary: 파일 업로드
       tags:
-      - files
-  /me:
+      - upload-file
+  /auth/me:
     get:
       description: 회원 정보 조회 API
       operationId: me
@@ -434,7 +432,7 @@ paths:
       summary: 회원 정보 조회
       tags:
       - auth
-  /sign-in:
+  /auth/sign-in:
     post:
       description: 회원 로그인 API
       operationId: sign-in
@@ -474,7 +472,7 @@ paths:
       tags:
       - auth
       x-codegen-request-body-name: req
-  /sign-up:
+  /auth/sign-up:
     post:
       description: 회원 가입 API
       operationId: sign-up
