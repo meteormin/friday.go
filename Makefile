@@ -75,9 +75,9 @@ build: arch ?= $(ARCH)
 build:
 	echo "Building $(mod) for $(os)-$(arch)"
 ifeq ($(os), linux)
-	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build $(LDFLAGS) -x -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
+	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build $(LDFLAGS) -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
 else
-	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build -x -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
+	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
 endif
 
 ##release mod={entrypoint [friday]} tag={tag [v1.0.0]}: release application
