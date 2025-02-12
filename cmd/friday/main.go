@@ -28,7 +28,6 @@ func init() {
 // @schemes http https
 // @host {{.Host}}
 // @BasePath /
-// @tag.name api
 // @tag.name auth
 // @tag.name users
 // @tag.name upload-file

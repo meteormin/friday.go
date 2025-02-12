@@ -48,7 +48,7 @@ type PostHandler struct {
 // @Produce json
 // @Success 200 {array} PostResource "포스트 리스트 조회 성공"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /posts [get]
+// @Router /api/posts [get]
 // @Tags posts
 func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 	posts, err := h.query.RetrievePosts(ctx.Query("query"))
@@ -68,7 +68,7 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Success 200 {object} PostResource "포스트 조회 성공"
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /posts/{id} [get]
+// @Router /api/api/posts/{id} [get]
 // @Tags posts
 func (h PostHandler) Find(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
@@ -95,7 +95,7 @@ func (h PostHandler) Find(ctx *fiber.Ctx) error {
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 409 {object} errors.Error "이메일 중복"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /posts [post]
+// @Router /api/posts [post]
 // @Tags posts
 func (h PostHandler) Create(ctx *fiber.Ctx) error {
 	var req CreatePostRequest
@@ -116,7 +116,7 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(post)
+	return ctx.Status(fiber.StatusCreated).JSON(post)
 }
 
 // Update
@@ -130,7 +130,7 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 // @Success 200 {object} PostResource "포스트 수정 성공"
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /posts/{id} [put]
+// @Router /api/posts/{id} [put]
 // @Tags posts
 func (h PostHandler) Update(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
@@ -167,7 +167,7 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 // @Success 204 {object} PostResource "포스트 삭제 성공"
 // @Failure 404 {object} errors.Error "존재하지 않는 포스트"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /posts/{id} [delete]
+// @Router /api/posts/{id} [delete]
 // @Tags posts
 func (h PostHandler) Delete(ctx *fiber.Ctx) error {
 

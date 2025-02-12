@@ -4,7 +4,7 @@ app:
   name: Friday.go
   version: 0.0.1
 server:
-  port: 8080
+  port: 8000
   jwt:
     secret: "jwt-secret"
     exp: 3600

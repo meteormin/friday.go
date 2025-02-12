@@ -19,9 +19,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/me": {
+        "/api/api/posts/{id}": {
             "get": {
-                "description": "회원 정보 조회 API",
+                "description": "포스트 조회 API",
                 "consumes": [
                     "application/json"
                 ],
@@ -29,19 +29,28 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "posts"
                 ],
-                "summary": "회원 정보 조회",
-                "operationId": "me",
+                "summary": "포스트 조회",
+                "operationId": "posts.find",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "포스트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "회원 정보 조회 성공",
+                        "description": "포스트 조회 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
                         }
                     },
-                    "401": {
-                        "description": "로그인 정보 없음",
+                    "400": {
+                        "description": "잘못된 요청",
                         "schema": {
                             "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
                         }
@@ -55,7 +64,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts": {
+        "/api/posts": {
             "get": {
                 "description": "포스트 리스트 조회 API",
                 "consumes": [
@@ -139,50 +148,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/{id}": {
-            "get": {
-                "description": "포스트 조회 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts"
-                ],
-                "summary": "포스트 조회",
-                "operationId": "posts.find",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "포스트 ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "포스트 조회 성공",
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
-                        }
-                    },
-                    "400": {
-                        "description": "잘못된 요청",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            },
+        "/api/posts/{id}": {
             "put": {
                 "description": "포스트 수정 API",
                 "consumes": [
@@ -266,6 +232,340 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "존재하지 않는 포스트",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sites": {
+            "post": {
+                "description": "사이트 생성 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 생성",
+                "operationId": "sites.create",
+                "parameters": [
+                    {
+                        "description": "사이트 생성 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.CreateSiteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "사이트 생성 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "이메일 중복",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sites/{id}": {
+            "get": {
+                "description": "사이트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 조회",
+                "operationId": "sites.find",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사이트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "사이트 조회 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "사이트 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "사이트 수정 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 수정",
+                "operationId": "sites.update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사이트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "사이트 수정 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UpdateSiteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "사이트 수정 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "사이트 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "사이트 삭제 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 삭제",
+                "operationId": "sites.delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사이트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "사이트 삭제 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "사이트 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sites/{id}/posts": {
+            "get": {
+                "description": "사이트 포스트 리스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 포스트 리스트 조회",
+                "operationId": "sites.retrievePosts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사이트 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "사이트 포스트 리스트 조회 성공",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "사이트 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload-file": {
+            "post": {
+                "description": "파일 업로드 API",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "파일 업로드",
+                "operationId": "files.upload",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "파일",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "파일 업로드 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UploadFileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "description": "회원 정보 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "회원 정보 조회",
+                "operationId": "me",
+                "responses": {
+                    "200": {
+                        "description": "회원 정보 조회 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                        }
+                    },
+                    "401": {
+                        "description": "로그인 정보 없음",
                         "schema": {
                             "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
                         }
@@ -458,6 +758,17 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_adapter_rest.CreateSiteRequest": {
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_adapter_rest.PostResource": {
             "type": "object",
             "properties": {
@@ -514,6 +825,20 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_adapter_rest.SiteResource": {
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_adapter_rest.TokenResource": {
             "description": "토큰 정보 리소스",
             "type": "object",
@@ -542,6 +867,25 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_adapter_rest.UpdateSiteRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_adapter_rest.UploadFileResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "url": {
                     "type": "string"
                 }
             }
