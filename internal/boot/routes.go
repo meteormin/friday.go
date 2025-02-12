@@ -29,7 +29,7 @@ func userHandler(router fiber.Router) {
 }
 
 func uploadFileHandler(router fiber.Router) {
-	fileRepo := repo.NewFileRepository(core.GetDB(), "uploads")
+	fileRepo := repo.NewFileRepository("uploads", core.GetDB(), core.GetStorage())
 	fileCommand := service.NewUploadFileService(fileRepo)
 	uploadFile := rest.NewUploadFileHandler(fileCommand)
 	uploadFile(router)

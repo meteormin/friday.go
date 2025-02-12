@@ -15,7 +15,7 @@ func (u UploadFileCommandService) UploadFile(uploadFile port.UploadFile) (*domai
 		return nil, err
 	}
 
-	return u.repo.CreateFile(file)
+	return u.repo.CreateFile(file, uploadFile.Data)
 }
 
 func NewUploadFileService(repo port.FileRepository) port.UploadFileUseCase {

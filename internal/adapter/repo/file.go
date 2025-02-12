@@ -1,25 +1,38 @@
 package repo
 
 import (
+	"github.com/dgraph-io/badger/v4"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
+	"github.com/meteormin/friday.go/pkg/database"
 	"gorm.io/gorm"
 )
 
 type FileRepositoryImpl struct {
-	db       *gorm.DB
 	basePath string
+	db       *gorm.DB
+	storage  *badger.DB
 }
 
-func (f FileRepositoryImpl) CreateFile(file *domain.File) (*domain.File, error) {
+func (f FileRepositoryImpl) CreateFile(file *domain.File, data []byte) (*domain.File, error) {
 	ent := mapToFileEntity(file)
+
+	err := database.PutFile(f.storage, ent.ConvFilename, data)
+	if err != nil {
+		return nil, err
+	}
+
 	f.db.Create(&ent)
 	return mapToFileModel(ent), nil
 }
 
-func NewFileRepository(db *gorm.DB, basePath string) port.FileRepository {
-	return &FileRepositoryImpl{db: db, basePath: basePath}
+func NewFileRepository(basePath string, db *gorm.DB, storage *badger.DB) port.FileRepository {
+	return &FileRepositoryImpl{
+		basePath: basePath,
+		db:       db,
+		storage:  storage,
+	}
 }
 
 func mapToFileEntity(model *domain.File) entity.File {

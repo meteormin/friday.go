@@ -42,5 +42,5 @@ type UploadFileUseCase interface {
 }
 
 type FileRepository interface {
-	CreateFile(file *domain.File) (*domain.File, error)
+	CreateFile(file *domain.File, data []byte) (*domain.File, error)
 }
