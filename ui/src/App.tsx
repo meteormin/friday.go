@@ -3,27 +3,41 @@ import {Navigate} from "react-router-dom";
 import * as React from "react";
 import SignIn from "./pages/sign-in/SignIn";
 import SignUp from "./pages/sign-up/SignUp";
+import Posts from "./pages/posts/Posts.tsx";
+import MainContainer from "./components/MainContainer.tsx";
+
+const nvItems = [
+    {name: "Posts", path: "/posts"}
+];
+
+function Guard({children}: { children: React.ReactNode }) {
+    const token = localStorage.getItem("token")
+    if (true) {
+        return <MainContainer mainAppBarProps={{
+            title: "Friday",
+            navItems: nvItems,
+            isLogin: true
+        }}>
+            {children}
+        </MainContainer>;
+    } else {
+        return <Navigate to="/sign-in" replace/>
+    }
+}
 
 interface RouteProps {
     path: string,
     element: React.ReactNode
 }
 
-function Guard({children}: { children: React.ReactNode }) {
-    const token = localStorage.getItem("token")
-    if (token) {
-        return children;
-    } else {
-        return <Navigate to="/sign-in" replace/>
-    }
-}
-
 const routes: RouteProps[] = [
     {
         path: "/",
-        element: <Guard>
-            <div>Home</div>
-        </Guard>
+        element: <Guard><Posts/></Guard>
+    },
+    {
+        path: "/posts",
+        element: <Guard><Posts/></Guard>
     },
     {
         path: "/sign-in",

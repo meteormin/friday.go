@@ -1,26 +1,32 @@
+import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import AppTheme from './theme/AppTheme';
-import MainAppBar from './MainAppBar';
-import MainContent from './MainContent';
-import Latest from './Latest';
+import MainAppBar, {MainAppBarProps} from './MainAppBar';
 import Footer from './Footer';
 
-export default function Blog(props: { disableCustomTheme?: boolean }) {
-    return (
-        <AppTheme {...props}>
-            <CssBaseline enableColorScheme />
+export interface MainContainerProps {
+    disableCustomTheme?: boolean;
+    mainAppBarProps: MainAppBarProps
+    children?: React.ReactNode;
+}
 
-            <MainAppBar />
+export default function MainContainer(props: MainContainerProps) {
+    return (
+        <AppTheme disableCustomTheme={props.disableCustomTheme}>
+            <CssBaseline enableColorScheme/>
+            <MainAppBar title={props.mainAppBarProps?.title ?? ''}
+                        navItems={props.mainAppBarProps?.navItems ?? []}
+                        isLogin={props.mainAppBarProps?.isLogin ?? false}
+            />
             <Container
                 maxWidth="lg"
                 component="main"
-                sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4 }}
+                sx={{display: 'flex', flexDirection: 'column', my: 16, gap: 4}}
             >
-                <MainContent />
-                <Latest />
+                {props.children}
             </Container>
-            <Footer />
+            <Footer/>
         </AppTheme>
     );
 }

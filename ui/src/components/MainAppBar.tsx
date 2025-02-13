@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { alpha, styled } from '@mui/material/styles';
+import {alpha, styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,8 +12,10 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from './theme/ColorModeIconDropdown';
+import {Navigate} from "react-router-dom";
+import Typography from "@mui/material/Typography";
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+const StyledToolbar = styled(Toolbar)(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -21,18 +23,33 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
     backdropFilter: 'blur(24px)',
     border: '1px solid',
-    borderColor: ( theme).palette.divider,
+    borderColor: (theme).palette.divider,
     backgroundColor: alpha(theme.palette.background.default, 0.4),
-    boxShadow: ( theme).shadows[1],
+    boxShadow: (theme).shadows[1],
     padding: '8px 12px',
 }));
 
-export default function MainAppBar() {
+export interface NavItem {
+    name: string;
+    path: string;
+}
+
+export interface MainAppBarProps {
+    title: string
+    navItems: NavItem[];
+    isLogin: boolean;
+}
+
+export default function MainAppBar({title, navItems, isLogin}: MainAppBarProps) {
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
+
+    const handleNavItemClick = (path: string) => (
+        () => <Navigate to={path} replace/>
+    );
 
     return (
         <AppBar
@@ -47,47 +64,43 @@ export default function MainAppBar() {
         >
             <Container maxWidth="lg">
                 <StyledToolbar variant="dense" disableGutters>
-                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <Button variant="text" color="info" size="small">
-                                Features
-                            </Button>
-                            <Button variant="text" color="info" size="small">
-                                Testimonials
-                            </Button>
-                            <Button variant="text" color="info" size="small">
-                                Highlights
-                            </Button>
-                            <Button variant="text" color="info" size="small">
-                                Pricing
-                            </Button>
-                            <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                                FAQ
-                            </Button>
-                            <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                                Blog
-                            </Button>
+                    <Box sx={{flexGrow: 1, display: 'flex', alignItems: 'center', px: 0}}>
+                        <Typography variant="h6" component="div" color={"secondary"} style={{marginRight: '1rem'}}>
+                            {title}
+                        </Typography>
+                        <Box sx={{display: {xs: 'none', md: 'flex'}}}>
+                            {navItems.map((navItem: NavItem) => (
+                                <Button key={navItem.name} variant="text" color="info" size="small"
+                                        onClick={handleNavItemClick(navItem.path)}>
+                                    {navItem.name}
+                                </Button>
+                            ))}
                         </Box>
                     </Box>
                     <Box
                         sx={{
-                            display: { xs: 'none', md: 'flex' },
+                            display: {xs: 'none', md: 'flex'},
                             gap: 1,
                             alignItems: 'center',
                         }}
                     >
-                        <Button color="primary" variant="text" size="small">
-                            Sign in
-                        </Button>
-                        <Button color="primary" variant="contained" size="small">
-                            Sign up
-                        </Button>
-                        <ColorModeIconDropdown />
+                        {
+                            isLogin ? (
+                                <Button color="primary" variant="text" size="small">
+                                    Profile
+                                </Button>
+                            ) : (
+                                <Button color="primary" variant="text" size="small">
+                                    Sign in
+                                </Button>
+                            )
+                        }
+                        <ColorModeIconDropdown/>
                     </Box>
-                    <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
-                        <ColorModeIconDropdown size="medium" />
+                    <Box sx={{display: {xs: 'flex', md: 'none'}, gap: 1}}>
+                        <ColorModeIconDropdown size="medium"/>
                         <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                         <Drawer
                             anchor="top"
@@ -99,7 +112,7 @@ export default function MainAppBar() {
                                 },
                             }}
                         >
-                            <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
+                            <Box sx={{p: 2, backgroundColor: 'background.default'}}>
                                 <Box
                                     sx={{
                                         display: 'flex',
@@ -107,7 +120,7 @@ export default function MainAppBar() {
                                     }}
                                 >
                                     <IconButton onClick={toggleDrawer(false)}>
-                                        <CloseRoundedIcon />
+                                        <CloseRoundedIcon/>
                                     </IconButton>
                                 </Box>
                                 <MenuItem>Features</MenuItem>
@@ -116,7 +129,7 @@ export default function MainAppBar() {
                                 <MenuItem>Pricing</MenuItem>
                                 <MenuItem>FAQ</MenuItem>
                                 <MenuItem>Blog</MenuItem>
-                                <Divider sx={{ my: 3 }} />
+                                <Divider sx={{my: 3}}/>
                                 <MenuItem>
                                     <Button color="primary" variant="contained" fullWidth>
                                         Sign up
