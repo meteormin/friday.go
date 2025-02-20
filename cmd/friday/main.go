@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/meteormin/friday.go/api"
+	"github.com/meteormin/friday.go/internal/adapter/rest"
 	"github.com/meteormin/friday.go/internal/boot"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
@@ -51,7 +52,7 @@ func main() {
 	apiInfo(cfg.Server.Host, cfg.App.Version, strconv.Itoa(cfg.Server.Port))
 
 	// set routes
-	boot.RegisterRoutes()
+	rest.RegisterRoutes()
 
 	// Listen from a different goroutine
 	go func() {

@@ -1,4 +1,4 @@
-package rest
+package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -202,13 +202,13 @@ func (handler *UserHandler) fetchUsers(ctx *fiber.Ctx) error {
 // NewUserHandler 회원 관리 Handler 생성
 func NewUserHandler(command port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
 
-	handler := &UserHandler{
+	h := &UserHandler{
 		command: command,
 		query:   query,
 	}
 
 	return func(router fiber.Router) {
 		group := router.Group("/users")
-		group.Get("/", handler.fetchUsers)
+		group.Get("/", h.fetchUsers)
 	}
 }
