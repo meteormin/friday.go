@@ -65,7 +65,7 @@ type AuthHandler struct {
 // @Failure 400 {object} errors.Error "잘못된 요청" errors.ErrInvalidUserPassword
 // @Failure 409 {object} errors.Error "이메일 중복" errors.ErrDuplicateUserUsername
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /auth/sign-up [post]
+// @Router /api/auth/sign-up [post]
 // @Tags auth
 func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 	var req SignupRequest
@@ -103,7 +103,7 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 // @Failure 400 {object} errors.Error "잘못된 요청"
 // @Failure 401 {object} errors.Error "로그인 실험"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /auth/sign-in [post]
+// @Router /api/auth/sign-in [post]
 // @Tags auth
 func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 	var req SignInRequest
@@ -143,7 +143,7 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 // @Success 200 {object} UserResource "회원 정보 조회 성공"
 // @Failure 401 {object} errors.Error "로그인 정보 없음"
 // @Failure 500 {object} errors.Error "서버 오류"
-// @Router /auth/me [get]
+// @Router /api/auth/me [get]
 // @Tags auth
 func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	token, ok := ctx.Locals("user").(*jwt.Token)

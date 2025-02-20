@@ -19,6 +19,148 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/me": {
+            "get": {
+                "description": "회원 정보 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "회원 정보 조회",
+                "operationId": "me",
+                "responses": {
+                    "200": {
+                        "description": "회원 정보 조회 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                        }
+                    },
+                    "401": {
+                        "description": "로그인 정보 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/sign-in": {
+            "post": {
+                "description": "회원 로그인 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "회원 로그인",
+                "operationId": "sign-in",
+                "parameters": [
+                    {
+                        "description": "회원 로그인 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SignInRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "회원 로그인 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.TokenResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "로그인 실험",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/sign-up": {
+            "post": {
+                "description": "회원 가입 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "회원 가입",
+                "operationId": "sign-up",
+                "parameters": [
+                    {
+                        "description": "회원 가입 정보",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.SignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "회원 가입 성공",
+                        "schema": {
+                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청\" errors.ErrInvalidUserPassword",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "이메일 중복\" errors.ErrDuplicateUserUsername",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/posts": {
             "get": {
                 "description": "포스트 리스트 조회 API",
@@ -563,148 +705,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/internal_adapter_rest.UserResource"
                             }
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/me": {
-            "get": {
-                "description": "회원 정보 조회 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "회원 정보 조회",
-                "operationId": "me",
-                "responses": {
-                    "200": {
-                        "description": "회원 정보 조회 성공",
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
-                        }
-                    },
-                    "401": {
-                        "description": "로그인 정보 없음",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/sign-in": {
-            "post": {
-                "description": "회원 로그인 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "회원 로그인",
-                "operationId": "sign-in",
-                "parameters": [
-                    {
-                        "description": "회원 로그인 정보",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SignInRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "회원 로그인 성공",
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.TokenResource"
-                        }
-                    },
-                    "400": {
-                        "description": "잘못된 요청",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "로그인 실험",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/sign-up": {
-            "post": {
-                "description": "회원 가입 API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "회원 가입",
-                "operationId": "sign-up",
-                "parameters": [
-                    {
-                        "description": "회원 가입 정보",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SignupRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "회원 가입 성공",
-                        "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
-                        }
-                    },
-                    "400": {
-                        "description": "잘못된 요청\" errors.ErrInvalidUserPassword",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
-                        }
-                    },
-                    "409": {
-                        "description": "이메일 중복\" errors.ErrDuplicateUserUsername",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
                         }
                     },
                     "500": {

@@ -133,6 +133,100 @@ info:
   title: Friday.go API
   version: '{{.Version}}'
 paths:
+  /api/auth/me:
+    get:
+      consumes:
+      - application/json
+      description: 회원 정보 조회 API
+      operationId: me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 정보 조회 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.UserResource'
+        "401":
+          description: 로그인 정보 없음
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 정보 조회
+      tags:
+      - auth
+  /api/auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: 회원 로그인 API
+      operationId: sign-in
+      parameters:
+      - description: 회원 로그인 정보
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapter_rest.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 회원 로그인 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.TokenResource'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "401":
+          description: 로그인 실험
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 로그인
+      tags:
+      - auth
+  /api/auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: 회원 가입 API
+      operationId: sign-up
+      parameters:
+      - description: 회원 가입 정보
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapter_rest.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 회원 가입 성공
+          schema:
+            $ref: '#/definitions/internal_adapter_rest.UserResource'
+        "400":
+          description: 잘못된 요청" errors.ErrInvalidUserPassword
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "409":
+          description: 이메일 중복" errors.ErrDuplicateUserUsername
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+        "500":
+          description: 서버 오류
+          schema:
+            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
+      summary: 회원 가입
+      tags:
+      - auth
   /api/posts:
     get:
       consumes:
@@ -504,100 +598,6 @@ paths:
       summary: 회원 리스트 조회
       tags:
       - users
-  /auth/me:
-    get:
-      consumes:
-      - application/json
-      description: 회원 정보 조회 API
-      operationId: me
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 회원 정보 조회 성공
-          schema:
-            $ref: '#/definitions/internal_adapter_rest.UserResource'
-        "401":
-          description: 로그인 정보 없음
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "500":
-          description: 서버 오류
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-      summary: 회원 정보 조회
-      tags:
-      - auth
-  /auth/sign-in:
-    post:
-      consumes:
-      - application/json
-      description: 회원 로그인 API
-      operationId: sign-in
-      parameters:
-      - description: 회원 로그인 정보
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/internal_adapter_rest.SignInRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 회원 로그인 성공
-          schema:
-            $ref: '#/definitions/internal_adapter_rest.TokenResource'
-        "400":
-          description: 잘못된 요청
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "401":
-          description: 로그인 실험
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "500":
-          description: 서버 오류
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-      summary: 회원 로그인
-      tags:
-      - auth
-  /auth/sign-up:
-    post:
-      consumes:
-      - application/json
-      description: 회원 가입 API
-      operationId: sign-up
-      parameters:
-      - description: 회원 가입 정보
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/internal_adapter_rest.SignupRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: 회원 가입 성공
-          schema:
-            $ref: '#/definitions/internal_adapter_rest.UserResource'
-        "400":
-          description: 잘못된 요청" errors.ErrInvalidUserPassword
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "409":
-          description: 이메일 중복" errors.ErrDuplicateUserUsername
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-        "500":
-          description: 서버 오류
-          schema:
-            $ref: '#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error'
-      summary: 회원 가입
-      tags:
-      - auth
 schemes:
 - http
 - https
