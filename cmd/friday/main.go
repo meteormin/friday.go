@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/meteormin/friday.go/api"
 	"github.com/meteormin/friday.go/internal/adapter/rest"
-	"github.com/meteormin/friday.go/internal/boot"
+	_ "github.com/meteormin/friday.go/internal/boot"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"os"
@@ -13,11 +13,6 @@ import (
 	"strings"
 	"syscall"
 )
-
-// init is a function that is called when the program starts.
-func init() {
-	boot.Boot()
-}
 
 // Friday.go API
 // @title Friday.go API

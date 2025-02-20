@@ -22,7 +22,7 @@ const (
 	appVersion = "0.0.1"
 )
 
-func Boot() {
+func init() {
 	cfg := config.LoadWithViper("config.yml", config.App{
 		Name:    appName,
 		Version: appVersion,
