@@ -20,6 +20,7 @@ func NewError(code int, title, message string) *Error {
 
 // User
 var (
+	ErrForbidden             = NewError(403, "Forbidden", "forbidden")
 	ErrInvalidUserName       = NewError(400, "InvalidUserName", "invalid name")
 	ErrInvalidUserUsername   = NewError(400, "InvalidUserUsername", "invalid username")
 	ErrInvalidUserPassword   = NewError(400, "InvalidUserPassword", "invalid password")

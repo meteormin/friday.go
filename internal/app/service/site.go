@@ -37,7 +37,14 @@ func (s *SiteCommandService) UpdateSite(id uint, site port.UpdateSite) (*domain.
 		return nil, err
 	}
 
-	return s.repo.UpdateSite(id, model)
+	findModel, err := s.repo.FindSite(id)
+	if err != nil {
+		return nil, err
+	}
+
+	findModel.Update(*model)
+
+	return s.repo.UpdateSite(id, findModel)
 }
 
 func (s *SiteCommandService) DeleteSite(id uint) error {

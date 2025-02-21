@@ -16,7 +16,7 @@ const getUsers = async (url: string, token: string): Promise<User[]> => {
         }
     });
 
-    return res.data as User[];
+    return res.data.content as User[];
 }
 
 export interface UsersClient extends WithToken {

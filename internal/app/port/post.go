@@ -119,7 +119,9 @@ type PostQueryUseCase interface {
 }
 
 type PostRepository interface {
-	ExistsPostByPath(path string) (bool, error)
+	ExistsPostByPath(siteId uint, path string) (bool, error)
+
+	HasAccessPermission(id uint, userId uint) (bool, error)
 
 	CreatePost(post *domain.Post) (*domain.Post, error)
 

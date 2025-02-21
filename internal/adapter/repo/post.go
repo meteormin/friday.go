@@ -13,9 +13,22 @@ type PostRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (p *PostRepositoryImpl) ExistsPostByPath(path string) (bool, error) {
+func (p *PostRepositoryImpl) HasAccessPermission(id uint, userId uint) (bool, error) {
 	var ent entity.Post
-	if err := p.db.Where("path = ?", path).First(&ent).Error; err != nil {
+
+	if err := p.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return ent.Site.UserID == userId, nil
+}
+
+func (p *PostRepositoryImpl) ExistsPostByPath(siteId uint, path string) (bool, error) {
+	var ent entity.Post
+	if err := p.db.Where("site_id = ? AND path = ?", siteId, path).First(&ent).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
@@ -39,7 +52,7 @@ func (p *PostRepositoryImpl) UpdatePost(id uint, post *domain.Post) (*domain.Pos
 	var ent entity.Post
 
 	err := p.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.First(&ent, id).Error; err != nil {
+		if err := tx.Preload(clause.Associations).First(&ent, id).Error; err != nil {
 			return err
 		}
 

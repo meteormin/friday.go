@@ -58,6 +58,8 @@ type UserQueryUseCase interface {
 	FindUserByUsername(username string) (*domain.User, error)
 
 	FetchUsers() []domain.User
+
+	HasAdmin() bool
 }
 
 type UserRepository interface {
@@ -74,4 +76,6 @@ type UserRepository interface {
 	Update(id uint, user *domain.User) (*domain.User, error)
 
 	Delete(id uint) error
+
+	ExistsByIsAdmin() bool
 }

@@ -126,7 +126,7 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 
 	exp := core.GetConfig().Server.Jwt.Exp
 	token, err := http.GenerateToken(req.Username,
-		time.Second*time.Duration(exp))
+		time.Second*time.Duration(exp), exists.IsAdmin)
 
 	if err != nil {
 		return err
@@ -169,6 +169,19 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	})
 }
 
+// @Summary 회원 관리자 여부 조회
+// @Description 회원 관리자 여부 조회 API
+// @ID has-admin
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]bool "회원 관리자 여부 조회 성공"
+// @Failure 500 {object} errors.Error "서버 오류"
+// @Router /api/auth/has-admin [get]
+// @Tags auth
+func (auth *AuthHandler) hasAdmin(ctx *fiber.Ctx) error {
+	return ctx.JSON(fiber.Map{"hasAdmin": auth.query.HasAdmin()})
+}
+
 func NewAuthHandler(useCase port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {
 
 	handler := &AuthHandler{
@@ -181,6 +194,7 @@ func NewAuthHandler(useCase port.UserCommandUseCase, query port.UserQueryUseCase
 		group.Post("/sign-up", handler.signUp)
 		group.Post("/sign-in", handler.signIn)
 		group.Get("/me", handler.me)
+		group.Get("/has-admin", handler.hasAdmin)
 	}
 }
 

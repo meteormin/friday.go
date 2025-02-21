@@ -11,4 +11,5 @@ type User struct {
 	Name     string
 	FileID   uint
 	File     *File
+	IsAdmin  bool
 }

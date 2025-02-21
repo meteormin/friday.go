@@ -19,10 +19,11 @@ func NewContentResource[T interface{}](content []T) ContentResource[T] {
 }
 
 // GenerateToken JWT 토큰 생성 함수
-func GenerateToken(username string, exp time.Duration) (string, error) {
+func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, error) {
 	claims := jwt.MapClaims{
 		"username": username,
 		"exp":      time.Now().Add(exp).Unix(), // 24시간 유효
+		"admin":    isAdmin,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

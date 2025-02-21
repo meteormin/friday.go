@@ -20,6 +20,10 @@ func (a *UserCommandService) CreateUser(user port.CreateUser) (*domain.User, err
 		return nil, errors.ErrDuplicateUserUsername
 	}
 
+	if !a.repo.ExistsByIsAdmin() {
+		model.IsAdmin = true
+	}
+
 	err = model.HashPassword()
 	if err != nil {
 		return nil, err
@@ -39,7 +43,7 @@ func (a *UserCommandService) UpdateUser(id uint, user port.UpdateUser) (*domain.
 		return nil, err
 	}
 
-	err = model.Update(updateModel)
+	err = model.Update(*updateModel)
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +63,10 @@ func NewUserCommandService(repo port.UserRepository) port.UserCommandUseCase {
 
 type UserQueryService struct {
 	repo port.UserRepository
+}
+
+func (a UserQueryService) HasAdmin() bool {
+	return a.repo.ExistsByIsAdmin()
 }
 
 func (a UserQueryService) FindUser(id uint) (*domain.User, error) {

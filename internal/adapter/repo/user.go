@@ -12,6 +12,14 @@ type UserRepositoryImpl struct {
 	db *gorm.DB
 }
 
+func (u UserRepositoryImpl) ExistsByIsAdmin() bool {
+	var count int64
+	u.db.Model(&entity.User{}).Where("is_admin = ?", true).
+		Count(&count)
+
+	return count > 0
+}
+
 func (u UserRepositoryImpl) ExistsByUsername(username string) bool {
 
 	var user entity.User
@@ -41,6 +49,12 @@ func (u UserRepositoryImpl) Update(id uint, user *domain.User) (*domain.User, er
 
 	ent.Name = user.Name
 	ent.Password = user.Password
+
+	if err := u.db.Model(&ent).Updates(ent).Error; err != nil {
+		return nil, err
+	}
+
+	u.db.First(&ent, id)
 
 	return mapToUserModel(ent), nil
 }
@@ -106,6 +120,7 @@ func mapToUserEntity(user *domain.User) entity.User {
 		Name:     user.Name,
 		Username: user.Username,
 		Password: user.Password,
+		IsAdmin:  user.IsAdmin,
 	}
 }
 
@@ -115,6 +130,7 @@ func mapToUserModel(user entity.User) *domain.User {
 		Name:      user.Name,
 		Username:  user.Username,
 		Password:  user.Password,
+		IsAdmin:   user.IsAdmin,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}

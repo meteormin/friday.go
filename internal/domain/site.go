@@ -6,6 +6,7 @@ type Site struct {
 	ID        uint
 	Host      string
 	Name      string
+	User      User
 	Posts     []Post
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -17,7 +17,7 @@ func (p PostCommandService) CreatePost(post port.CreatePost) (*domain.Post, erro
 		return nil, err
 	}
 
-	if exists, err := p.repo.ExistsPostByPath(model.Path); err != nil {
+	if exists, err := p.repo.ExistsPostByPath(model.SiteID, model.Path); err != nil {
 		return nil, err
 	} else if exists {
 		return nil, apperrors.ErrDuplicatePostPath

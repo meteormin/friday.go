@@ -41,7 +41,7 @@ const getPosts = async (url: string, token: string): Promise<Post[]> => {
         }
     });
 
-    return res.data as Post[];
+    return res.data.content as Post[];
 }
 
 const getPost = async (url: string, token: string, id: number): Promise<Post> => {

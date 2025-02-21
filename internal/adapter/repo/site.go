@@ -54,6 +54,7 @@ func (s SiteRepositoryImpl) UpdateSite(id uint, site *domain.Site) (*domain.Site
 	}
 
 	ent.Name = site.Name
+	ent.UserID = site.User.ID
 
 	if err := s.db.Save(&ent).Error; err != nil {
 		return nil, err

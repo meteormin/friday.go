@@ -6,7 +6,7 @@ type Post struct {
 	gorm.Model
 	Title   string
 	Content string
-	Path    string `gorm:"unique"`
+	Path    string
 	FileID  uint
 	File    *File
 	SiteID  uint
