@@ -16,11 +16,12 @@ type Post struct {
 	UpdatedAt time.Time
 }
 
-type Site struct {
-	ID    uint
-	Host  string
-	Name  string
-	Posts []Post
+func (post *Post) Update(updatePost Post) {
+	post.Title = updatePost.Title
+	post.Content = updatePost.Content
+	post.Path = updatePost.Path
+	post.FileID = updatePost.FileID
+	post.UpdatedAt = time.Now()
 }
 
 type Tag struct {

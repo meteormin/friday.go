@@ -5,6 +5,7 @@ import (
 	_ "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
+	"github.com/meteormin/friday.go/internal/domain"
 	"strconv"
 )
 
@@ -30,9 +31,34 @@ type PostResource struct {
 	URI       string   `json:"uri"`
 	Title     string   `json:"title"`
 	Content   string   `json:"content"`
+	FileID    uint     `json:"fileId"`
 	Tags      []string `json:"tags"`
 	CreatedAt string   `json:"created_at"`
 	UpdatedAt string   `json:"updated_at"`
+}
+
+func mapToPostResource(post domain.Post) PostResource {
+
+	tags := make([]string, 0)
+	for _, tag := range post.Tags {
+		tags = append(tags, tag.Tag)
+	}
+
+	uri := ""
+	if post.Site != nil {
+		uri = post.Site.Host + "/" + post.Path
+	}
+
+	return PostResource{
+		ID:        post.ID,
+		URI:       uri,
+		Title:     post.Title,
+		Content:   post.Content,
+		Tags:      tags,
+		FileID:    post.FileID,
+		CreatedAt: post.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt: post.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
 }
 
 type PostHandler struct {
@@ -55,7 +81,13 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(http.NewContentResource(posts))
+
+	resources := make([]PostResource, 0)
+	for _, post := range posts {
+		resources = append(resources, mapToPostResource(post))
+	}
+
+	return ctx.JSON(http.NewContentResource(resources))
 }
 
 // Find
@@ -81,7 +113,7 @@ func (h PostHandler) Find(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(post)
+	return ctx.JSON(mapToPostResource(*post))
 }
 
 // Create
@@ -116,7 +148,7 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(post)
+	return ctx.Status(fiber.StatusCreated).JSON(mapToPostResource(*post))
 }
 
 // Update
@@ -154,7 +186,7 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(post)
+	return ctx.JSON(mapToPostResource(*post))
 }
 
 // Delete

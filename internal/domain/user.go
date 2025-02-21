@@ -24,7 +24,7 @@ func (u *User) HashPassword() error {
 	return err
 }
 
-func (u *User) Update(update *User) error {
+func (u *User) Update(update User) error {
 	if update.Name != "" {
 		u.Name = update.Name
 	}

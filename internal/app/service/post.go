@@ -28,12 +28,23 @@ func (p PostCommandService) CreatePost(post port.CreatePost) (*domain.Post, erro
 
 func (p PostCommandService) UpdatePost(id uint, post port.UpdatePost) (*domain.Post, error) {
 	model, err := post.Valid()
-
 	if err != nil {
 		return nil, err
 	}
 
-	return p.repo.UpdatePost(id, model)
+	findPost, err := p.repo.FindPost(id)
+	if err != nil {
+		return nil, err
+	}
+
+	findPost.Update(*model)
+
+	updated, err := p.repo.UpdatePost(id, findPost)
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
 }
 
 func (p PostCommandService) DeletePost(id uint) error {

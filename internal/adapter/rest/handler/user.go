@@ -20,6 +20,7 @@ type SignInRequest struct {
 // SignupRequest
 // @Description 가입 요청
 type SignupRequest struct {
+	ID       uint   `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -35,6 +36,7 @@ type UpdateUserRequest struct {
 // UserResource
 // @Description 회원 정보 리소스
 type UserResource struct {
+	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -86,6 +88,7 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusCreated).
 		JSON(UserResource{
+			ID:        user.ID,
 			Name:      user.Name,
 			Username:  user.Username,
 			CreatedAt: user.CreatedAt,
@@ -158,6 +161,7 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(UserResource{
+		ID:        user.ID,
 		Name:      user.Name,
 		Username:  user.Username,
 		CreatedAt: user.CreatedAt,

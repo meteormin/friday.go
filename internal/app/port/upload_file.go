@@ -39,8 +39,12 @@ func (u UploadFile) Valid() (*domain.File, error) {
 
 type UploadFileUseCase interface {
 	UploadFile(file UploadFile) (*domain.File, error)
+
+	DownloadFIle(fileID uint) ([]byte, *domain.File, error)
 }
 
 type FileRepository interface {
 	CreateFile(file *domain.File, data []byte) (*domain.File, error)
+
+	FindFile(id uint) ([]byte, *domain.File, error)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type SiteRepositoryImpl struct {
@@ -48,7 +49,7 @@ func (s SiteRepositoryImpl) CreateSite(site *domain.Site) (*domain.Site, error) 
 func (s SiteRepositoryImpl) UpdateSite(id uint, site *domain.Site) (*domain.Site, error) {
 	var ent entity.Site
 
-	if err := s.db.First(&ent, id).Error; err != nil {
+	if err := s.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -68,7 +69,7 @@ func (s SiteRepositoryImpl) DeleteSite(id uint) error {
 func (s SiteRepositoryImpl) FindSite(id uint) (*domain.Site, error) {
 	var ent entity.Site
 
-	if err := s.db.First(&ent, id).Error; err != nil {
+	if err := s.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -78,7 +79,7 @@ func (s SiteRepositoryImpl) FindSite(id uint) (*domain.Site, error) {
 func (s SiteRepositoryImpl) RetrieveSite(query string) ([]domain.Site, error) {
 	var sites []entity.Site
 
-	tx := s.db.Where("name LIKE ?", "%"+query+"% OR host LIKE ?", "%"+query+"%").
+	tx := s.db.Preload(clause.Associations).Where("name LIKE ?", "%"+query+"% OR host LIKE ?", "%"+query+"%").
 		Find(&sites)
 
 	if err := tx.Error; err != nil {
@@ -96,7 +97,7 @@ func (s SiteRepositoryImpl) RetrieveSite(query string) ([]domain.Site, error) {
 func (s SiteRepositoryImpl) RetrievePostBySite(siteID uint) ([]domain.Post, error) {
 	var posts []entity.Post
 
-	tx := s.db.Where("site_id = ?", siteID).Find(&posts)
+	tx := s.db.Preload(clause.Associations).Where("site_id = ?", siteID).Find(&posts)
 
 	if err := tx.Error; err != nil {
 		return make([]domain.Post, 0), err

@@ -6,6 +6,7 @@ import (
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PostRepositoryImpl struct {
@@ -37,19 +38,55 @@ func (p *PostRepositoryImpl) CreatePost(post *domain.Post) (*domain.Post, error)
 func (p *PostRepositoryImpl) UpdatePost(id uint, post *domain.Post) (*domain.Post, error) {
 	var ent entity.Post
 
-	if err := p.db.First(&ent, id).Error; err != nil {
+	err := p.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.First(&ent, id).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&ent).Updates(entity.Post{
+			Title:   post.Title,
+			Content: post.Content,
+			FileID:  post.FileID,
+			SiteID:  post.SiteID,
+		}).Error; err != nil {
+			return err
+		}
+
+		if err := updatePostTags(tx, id, post.Tags); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
 
-	ent.Title = post.Title
-	ent.Content = post.Content
-	ent.FileID = post.FileID
-
-	if err := p.db.Save(&ent).Error; err != nil {
-		return nil, err
-	}
+	p.db.Preload(clause.Associations).First(&ent, id)
 
 	return mapToPostModel(ent), nil
+}
+
+func updatePostTags(tx *gorm.DB, id uint, tags []domain.Tag) error {
+	var tagEntities []entity.Tag
+	if err := tx.Where("post_id = ?", id).Find(&tagEntities).Error; err != nil {
+		return err
+	}
+
+	for _, tag := range tags {
+		tagEntities = append(tagEntities, entity.Tag{
+			Tag: tag.Tag,
+		})
+	}
+
+	if err := tx.Model(&entity.Tag{}).
+		Where("post_id = ?", id).
+		Updates(tagEntities).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *PostRepositoryImpl) DeletePost(id uint) error {
@@ -59,7 +96,7 @@ func (p *PostRepositoryImpl) DeletePost(id uint) error {
 func (p *PostRepositoryImpl) FindPost(id uint) (*domain.Post, error) {
 	var ent entity.Post
 
-	if err := p.db.First(&ent, id).Error; err != nil {
+	if err := p.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -69,7 +106,7 @@ func (p *PostRepositoryImpl) FindPost(id uint) (*domain.Post, error) {
 func (p *PostRepositoryImpl) RetrievePosts(query string) ([]domain.Post, error) {
 	var posts []entity.Post
 
-	tx := p.db.Where("title LIKE ?", "%"+query+"% OR content LIKE ?", "%"+query+"%").
+	tx := p.db.Preload(clause.Associations).Where("title LIKE ?", "%"+query+"% OR content LIKE ?", "%"+query+"%").
 		Find(&posts)
 
 	if err := tx.Error; err != nil {

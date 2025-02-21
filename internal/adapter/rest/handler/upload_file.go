@@ -1,17 +1,19 @@
 package handler
 
 import (
+	"bytes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	_ "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"path"
+	"strconv"
 )
 
 type UploadFileResponse struct {
 	ID  uint   `json:"id"`
-	URL string `json:"url"`
+	URI string `json:"uri"`
 }
 
 type UploadFileHandler struct {
@@ -49,8 +51,8 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	bytes := make([]byte, uploadFile.Size)
-	_, err = data.Read(bytes)
+	fBytes := make([]byte, uploadFile.Size)
+	_, err = data.Read(fBytes)
 	if err != nil {
 		return err
 	}
@@ -58,7 +60,7 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 	file, err := handler.useCase.UploadFile(port.UploadFile{
 		FileName: uploadFile.Filename,
 		Size:     uint(uploadFile.Size),
-		Data:     bytes,
+		Data:     fBytes,
 	})
 
 	if err != nil {
@@ -67,8 +69,35 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusCreated).JSON(UploadFileResponse{
 		ID:  file.ID,
-		URL: path.Join("/files", convFilename),
+		URI: path.Join("/upload-file", convFilename),
 	})
+}
+
+// DownloadFile
+// @Summary 파일 다운로드
+// @Description 파일 다운로드 API
+// @ID files.download
+// @Produce octet-stream
+// @Param id path string true "파일 ID"
+// @Success 200 {object} []byte "파일 다운로드 성공"
+// @Failure 400 {object} errors.Error "잘못된 요청"
+// @Failure 404 {object} errors.Error "파일 없음"
+// @Failure 500 {object} errors.Error "서버 오류"
+// @Router /api/upload-file/{id} [get]
+// @Tags upload-file
+func (handler *UploadFileHandler) downloadFile(ctx *fiber.Ctx) error {
+
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	file, domainModel, err := handler.useCase.DownloadFIle(uint(id))
+	if err != nil {
+		return err
+	}
+
+	return ctx.Type(domainModel.MimeType).SendStream(bytes.NewReader(file))
 }
 
 func NewUploadFileHandler(useCase port.UploadFileUseCase) http.AddRouteFunc {
@@ -80,5 +109,6 @@ func NewUploadFileHandler(useCase port.UploadFileUseCase) http.AddRouteFunc {
 	return func(router fiber.Router) {
 		group := router.Group("/upload-file")
 		group.Post("/", handler.uploadFile)
+		group.Get("/:id", handler.downloadFile)
 	}
 }

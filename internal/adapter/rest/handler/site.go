@@ -5,18 +5,45 @@ import (
 	_ "github.com/meteormin/friday.go/internal/app/errors"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
+	"github.com/meteormin/friday.go/internal/domain"
 	"strconv"
 )
 
 type SiteResource struct {
-	ID   uint   `json:"id"`
-	Host string `json:"host"`
-	Name string `json:"name"`
+	ID        uint           `json:"id"`
+	Host      string         `json:"host"`
+	Name      string         `json:"name"`
+	CreatedAt string         `json:"createdAt"`
+	UpdatedAt string         `json:"updatedAt"`
+	Posts     []PostResource `json:"posts"`
+}
+
+func mapToSiteResource(site domain.Site) SiteResource {
+	posts := make([]PostResource, 0)
+	for _, post := range site.Posts {
+		posts = append(posts, mapToPostResource(post))
+	}
+
+	return SiteResource{
+		ID:        site.ID,
+		Host:      site.Host,
+		Name:      site.Name,
+		CreatedAt: site.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt: site.UpdatedAt.Format("2006-01-02 15:04:05"),
+		Posts:     posts,
+	}
 }
 
 type CreateSiteRequest struct {
 	Host string `json:"host"`
 	Name string `json:"name"`
+}
+
+func (r CreateSiteRequest) ToDomain() port.CreateSite {
+	return port.CreateSite{
+		Host: r.Host,
+		Name: r.Name,
+	}
 }
 
 type UpdateSiteRequest struct {
@@ -33,7 +60,13 @@ func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(http.NewContentResource(sites))
+
+	resources := make([]SiteResource, 0)
+	for _, site := range sites {
+		resources = append(resources, mapToSiteResource(site))
+	}
+
+	return ctx.JSON(http.NewContentResource(resources))
 }
 
 // Find
@@ -59,7 +92,7 @@ func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(site)
+	return ctx.JSON(mapToSiteResource(*site))
 }
 
 // RetrievePosts
@@ -85,7 +118,7 @@ func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(http.NewContentResource(site.Posts))
+	return ctx.JSON(http.NewContentResource(mapToSiteResource(*site).Posts))
 }
 
 // Create
@@ -117,7 +150,9 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(site)
+	resource := mapToSiteResource(*site)
+
+	return ctx.Status(fiber.StatusCreated).JSON(resource)
 }
 
 // Update

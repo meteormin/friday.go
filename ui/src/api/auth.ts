@@ -1,4 +1,5 @@
 import axios from "axios"
+import {WithToken} from "./common.ts";
 
 export interface SignUpRequest {
     username: string
@@ -7,6 +8,7 @@ export interface SignUpRequest {
 }
 
 export interface SignUpResponse {
+    id: number
     username: string
     name: string
     createdAt: string
@@ -17,7 +19,7 @@ const signUP = async (url: string, req: SignUpRequest): Promise<SignUpResponse> 
     const res = await axios.post(url + "/api/auth/sign-up", req);
 
     return res.data as SignUpResponse
-};
+}
 
 export interface SignInRequest {
     username: string
@@ -34,11 +36,36 @@ const signIn = async (url: string, req: SignInRequest): Promise<SignInResponse> 
     return res.data as SignInResponse;
 }
 
-const Auth = (apiUrl: string) => {
-    return {
-        signUp: (req: SignUpRequest): Promise<SignUpResponse> => signUP(apiUrl, req),
-        signIn: (req: SignInRequest): Promise<SignInResponse> => signIn(apiUrl, req),
-    };
+export interface User {
+    id: number
+    username: string
+    name: string
+    createdAt: string
+    updatedAt: string
 }
 
-export default Auth;
+
+const me = async (url: string, token: string): Promise<User> => {
+    const res = await axios.get(url + "/api/auth/me", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    return res.data as User;
+}
+
+export interface AuthClient extends WithToken {
+    signUp: (req: SignUpRequest) => Promise<SignUpResponse>
+    signIn: (req: SignInRequest) => Promise<SignInResponse>
+    me: () => Promise<User>
+}
+
+export default function Auth(apiUrl: string, withToken: WithToken): AuthClient {
+    return {
+        ...withToken,
+        signUp: (req: SignUpRequest): Promise<SignUpResponse> => signUP(apiUrl, req),
+        signIn: (req: SignInRequest): Promise<SignInResponse> => signIn(apiUrl, req),
+        me: (): Promise<User> => me(apiUrl, withToken.getToken().token)
+    };
+};

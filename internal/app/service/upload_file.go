@@ -9,6 +9,10 @@ type UploadFileCommandService struct {
 	repo port.FileRepository
 }
 
+func (u UploadFileCommandService) DownloadFIle(fileID uint) ([]byte, *domain.File, error) {
+	return u.repo.FindFile(fileID)
+}
+
 func (u UploadFileCommandService) UploadFile(uploadFile port.UploadFile) (*domain.File, error) {
 	file, err := uploadFile.Valid()
 	if err != nil {

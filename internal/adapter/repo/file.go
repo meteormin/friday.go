@@ -15,6 +15,20 @@ type FileRepositoryImpl struct {
 	storage  *badger.DB
 }
 
+func (f FileRepositoryImpl) FindFile(id uint) ([]byte, *domain.File, error) {
+	var ent entity.File
+	if err := f.db.First(&ent, id).Error; err != nil {
+		return nil, nil, err
+	}
+
+	file, err := database.GetFile(f.storage, ent.ConvFilename, f.basePath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return file, mapToFileModel(ent), nil
+}
+
 func (f FileRepositoryImpl) CreateFile(file *domain.File, data []byte) (*domain.File, error) {
 	err := database.PutFile(f.storage, file.ConvName, data)
 	if err != nil {
