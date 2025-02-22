@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/meteormin/friday.go/internal/app/errors"
+	"github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/domain"
 )
@@ -17,7 +17,7 @@ func (a *UserCommandService) CreateUser(user port.CreateUser) (*domain.User, err
 	}
 
 	if a.repo.ExistsByUsername(model.Username) {
-		return nil, errors.ErrDuplicateUserUsername
+		return nil, app.ErrDuplicateUserUsername
 	}
 
 	if !a.repo.ExistsByIsAdmin() {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	_ "github.com/meteormin/friday.go/internal/app/errors"
+	_ "github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"path"
@@ -28,11 +28,12 @@ type UploadFileHandler struct {
 // @Produce json
 // @Param file formData file true "파일"
 // @Success 201 {object} UploadFileResponse "파일 업로드 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/upload-file [post]
 // @Tags upload-file
 func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
 	uploadFile, err := ctx.FormFile("file")
 	if err != nil {
@@ -57,7 +58,7 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	file, err := handler.useCase.UploadFile(port.UploadFile{
+	file, err := handler.useCase.UploadFile(userId, port.UploadFile{
 		FileName: uploadFile.Filename,
 		Size:     uint(uploadFile.Size),
 		Data:     fBytes,
@@ -80,19 +81,20 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 // @Produce octet-stream
 // @Param id path string true "파일 ID"
 // @Success 200 {object} []byte "파일 다운로드 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 404 {object} errors.Error "파일 없음"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 404 {object} app.Error "파일 없음"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/upload-file/{id} [get]
 // @Tags upload-file
 func (handler *UploadFileHandler) downloadFile(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	file, domainModel, err := handler.useCase.DownloadFIle(uint(id))
+	file, domainModel, err := handler.useCase.DownloadFIle(userId, uint(id))
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package boot
+package bootstrap
 
 import (
 	"crypto/rand"
@@ -22,7 +22,8 @@ const (
 	appVersion = "0.0.1"
 )
 
-func init() {
+func Initialize() {
+
 	cfg := config.LoadWithViper("config.yml", config.App{
 		Name:    appName,
 		Version: appVersion,

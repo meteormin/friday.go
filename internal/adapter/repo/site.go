@@ -6,11 +6,22 @@ import (
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"github.com/meteormin/friday.go/internal/domain"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type SiteRepositoryImpl struct {
 	db *gorm.DB
+}
+
+func (s SiteRepositoryImpl) HasAccessPermission(userID, siteID uint) (bool, error) {
+	var count int64
+	if err := s.db.Where("user_id = ? AND id = ?", userID, siteID).Count(&count).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 func (s SiteRepositoryImpl) ExistsSiteByHost(host string) (bool, error) {
@@ -49,7 +60,7 @@ func (s SiteRepositoryImpl) CreateSite(site *domain.Site) (*domain.Site, error) 
 func (s SiteRepositoryImpl) UpdateSite(id uint, site *domain.Site) (*domain.Site, error) {
 	var ent entity.Site
 
-	if err := s.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
+	if err := s.db.First(&ent, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -70,17 +81,18 @@ func (s SiteRepositoryImpl) DeleteSite(id uint) error {
 func (s SiteRepositoryImpl) FindSite(id uint) (*domain.Site, error) {
 	var ent entity.Site
 
-	if err := s.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
+	if err := s.db.First(&ent, id).Error; err != nil {
 		return nil, err
 	}
 
 	return mapToSiteModel(ent), nil
 }
 
-func (s SiteRepositoryImpl) RetrieveSite(query string) ([]domain.Site, error) {
+func (s SiteRepositoryImpl) RetrieveSite(userID uint, query string) ([]domain.Site, error) {
 	var sites []entity.Site
 
-	tx := s.db.Preload(clause.Associations).Where("name LIKE ?", "%"+query+"% OR host LIKE ?", "%"+query+"%").
+	tx := s.db.Preload("User", "user_id = ?", userID).
+		Where("name LIKE ?", "%"+query+"% OR host LIKE ?", "%"+query+"%").
 		Find(&sites)
 
 	if err := tx.Error; err != nil {
@@ -95,10 +107,13 @@ func (s SiteRepositoryImpl) RetrieveSite(query string) ([]domain.Site, error) {
 	return results, nil
 }
 
-func (s SiteRepositoryImpl) RetrievePostBySite(siteID uint) ([]domain.Post, error) {
+func (s SiteRepositoryImpl) RetrievePostBySite(userID, siteID uint) ([]domain.Post, error) {
 	var posts []entity.Post
 
-	tx := s.db.Preload(clause.Associations).Where("site_id = ?", siteID).Find(&posts)
+	tx := s.db.Preload("User", "user_id = ?", userID).
+		Preload("Posts").
+		Preload("Posts.Tags").
+		Where("site_id = ?", siteID).Find(&posts)
 
 	if err := tx.Error; err != nil {
 		return make([]domain.Post, 0), err
@@ -126,7 +141,8 @@ func mapToSiteModel(ent entity.Site) *domain.Site {
 
 func mapToSiteEntity(site *domain.Site) entity.Site {
 	return entity.Site{
-		Name: site.Name,
-		Host: site.Host,
+		Name:   site.Name,
+		Host:   site.Host,
+		UserID: site.User.ID,
 	}
 }

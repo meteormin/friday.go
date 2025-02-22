@@ -14,7 +14,7 @@ type SearchBySite struct {
 }
 
 type SearchUseCase interface {
-	KeywordSearch(search SearchByKeyword) ([]domain.Post, error)
+	KeywordSearch(userId uint, search SearchByKeyword) ([]domain.Post, error)
 
-	SiteSearch(search SearchBySite) ([]domain.Post, error)
+	SiteSearch(userId uint, search SearchBySite) ([]domain.Post, error)
 }

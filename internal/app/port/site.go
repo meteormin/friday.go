@@ -1,27 +1,31 @@
 package port
 
 import (
-	"github.com/meteormin/friday.go/internal/app/errors"
+	"github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/domain"
 )
 
 type CreateSite struct {
-	Host string
-	Name string
+	Host   string
+	Name   string
+	UserID uint
 }
 
 func (c CreateSite) Valid() (*domain.Site, error) {
 	if c.Host == "" {
-		return nil, errors.ErrInvalidSiteHost
+		return nil, app.ErrInvalidSiteHost
 	}
 
 	if c.Name == "" {
-		return nil, errors.ErrInvalidSiteName
+		return nil, app.ErrInvalidSiteName
 	}
 
 	return &domain.Site{
 		Host: c.Host,
 		Name: c.Name,
+		User: domain.User{
+			ID: c.UserID,
+		},
 	}, nil
 }
 
@@ -31,7 +35,7 @@ type UpdateSite struct {
 
 func (u UpdateSite) Valid() (*domain.Site, error) {
 	if u.Name == "" {
-		return nil, errors.ErrInvalidSiteName
+		return nil, app.ErrInvalidSiteName
 	}
 
 	return &domain.Site{
@@ -41,14 +45,14 @@ func (u UpdateSite) Valid() (*domain.Site, error) {
 
 type SiteCommandUseCase interface {
 	CreateSite(site CreateSite) (*domain.Site, error)
-	UpdateSite(id uint, site UpdateSite) (*domain.Site, error)
-	DeleteSite(id uint) error
+	UpdateSite(userId, id uint, site UpdateSite) (*domain.Site, error)
+	DeleteSite(userId, id uint) error
 }
 
 type SiteQueryUseCase interface {
-	FindSite(id uint) (*domain.Site, error)
+	FindSite(userId, id uint) (*domain.Site, error)
 
-	RetrieveSite(query string) ([]domain.Site, error)
+	RetrieveSite(userId uint, query string) ([]domain.Site, error)
 }
 
 type SiteRepository interface {
@@ -64,7 +68,9 @@ type SiteRepository interface {
 
 	FindSite(id uint) (*domain.Site, error)
 
-	RetrieveSite(query string) ([]domain.Site, error)
+	RetrieveSite(userID uint, query string) ([]domain.Site, error)
 
-	RetrievePostBySite(siteID uint) ([]domain.Post, error)
+	RetrievePostBySite(userID, siteID uint) ([]domain.Post, error)
+
+	HasAccessPermission(userID, siteID uint) (bool, error)
 }

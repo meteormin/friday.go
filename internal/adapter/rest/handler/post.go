@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/meteormin/friday.go/internal/app/errors"
+	_ "github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"github.com/meteormin/friday.go/internal/domain"
@@ -73,11 +73,12 @@ type PostHandler struct {
 // @Accept json
 // @Produce json
 // @Success 200 {array} PostResource "포스트 리스트 조회 성공"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts [get]
 // @Tags posts
 func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
-	posts, err := h.query.RetrievePosts(ctx.Query("query"))
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	posts, err := h.query.RetrievePosts(userId, ctx.Query("query"))
 	if err != nil {
 		return err
 	}
@@ -98,17 +99,19 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "포스트 ID"
 // @Success 200 {object} PostResource "포스트 조회 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [get]
 // @Tags posts
 func (h PostHandler) Find(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.query.FindPost(uint(id))
+	post, err := h.query.FindPost(userId, uint(id))
 	if err != nil {
 		return err
 	}
@@ -124,19 +127,21 @@ func (h PostHandler) Find(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param req body CreatePostRequest true "포스트 생성 정보"
 // @Success 201 {object} PostResource "포스트 생성 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 409 {object} errors.Error "이메일 중복"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 409 {object} app.Error "이메일 중복"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts [post]
 // @Tags posts
 func (h PostHandler) Create(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	var req CreatePostRequest
 	err := ctx.BodyParser(&req)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.command.CreatePost(port.CreatePost{
+	post, err := h.command.CreatePost(userId, port.CreatePost{
 		SiteID:  req.SiteID,
 		FileID:  req.FileID,
 		Title:   req.Title,
@@ -160,11 +165,13 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 // @Param id path int true "포스트 ID"
 // @Param req body UpdatePostRequest true "포스트 수정 정보"
 // @Success 200 {object} PostResource "포스트 수정 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [put]
 // @Tags posts
 func (h PostHandler) Update(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
@@ -176,7 +183,7 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.command.UpdatePost(uint(id), port.UpdatePost{
+	post, err := h.command.UpdatePost(userId, uint(id), port.UpdatePost{
 		FileID:  update.FileID,
 		Title:   update.Title,
 		Content: update.Content,
@@ -197,18 +204,19 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "포스트 ID"
 // @Success 204 {object} PostResource "포스트 삭제 성공"
-// @Failure 404 {object} errors.Error "존재하지 않는 포스트"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 404 {object} app.Error "존재하지 않는 포스트"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [delete]
 // @Tags posts
 func (h PostHandler) Delete(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	err = h.command.DeletePost(uint(id))
+	err = h.command.DeletePost(userId, uint(id))
 	if err != nil {
 		return err
 	}

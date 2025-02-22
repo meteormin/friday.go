@@ -9,4 +9,6 @@ type File struct {
 	Path           string
 	MimeType       string
 	Size           uint64
+	UserID         uint
+	User           User
 }

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/meteormin/friday.go/internal/app/errors"
+	_ "github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"github.com/meteormin/friday.go/internal/domain"
@@ -55,8 +55,21 @@ type SiteHandler struct {
 	query   port.SiteQueryUseCase
 }
 
+// Retrieve
+// @Summary 사이트 리스트 조회
+// @Description 사이트 리스트 조회 API
+// @ID sites.retrieve
+// @Accept json
+// @Produce json
+// @Success 200 {array} SiteResource "사이트 리스트 조회 성공"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 500 {object} app.Error "서버 오류"
+// @Router /api/sites [get]
+// @Tags sites
 func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
-	sites, err := handler.query.RetrieveSite(ctx.Query("query"))
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
+	sites, err := handler.query.RetrieveSite(userId, ctx.Query("query"))
 	if err != nil {
 		return err
 	}
@@ -77,17 +90,19 @@ func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "사이트 ID"
 // @Success 200 {object} SiteResource "사이트 조회 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 404 {object} errors.Error "사이트 없음"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 404 {object} app.Error "사이트 없음"
 // @Router /api/sites/{id} [get]
 // @Tags sites
 func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.query.FindSite(uint(id))
+	site, err := handler.query.FindSite(userId, uint(id))
 	if err != nil {
 		return err
 	}
@@ -103,17 +118,19 @@ func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "사이트 ID"
 // @Success 200 {array} PostResource "사이트 포스트 리스트 조회 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 404 {object} errors.Error "사이트 없음"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 404 {object} app.Error "사이트 없음"
 // @Router /api/sites/{id}/posts [get]
 // @Tags sites
 func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.query.FindSite(uint(id))
+	site, err := handler.query.FindSite(userId, uint(id))
 	if err != nil {
 		return err
 	}
@@ -129,12 +146,14 @@ func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param req body CreateSiteRequest true "사이트 생성 정보"
 // @Success 201 {object} SiteResource "사이트 생성 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 409 {object} errors.Error "이메일 중복"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 409 {object} app.Error "이메일 중복"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites [post]
 // @Tags sites
 func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	var req CreateSiteRequest
 	err := ctx.BodyParser(&req)
 	if err != nil {
@@ -142,8 +161,9 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 	}
 
 	site, err := handler.useCase.CreateSite(port.CreateSite{
-		Host: req.Host,
-		Name: req.Name,
+		Host:   req.Host,
+		Name:   req.Name,
+		UserID: userId,
 	})
 
 	if err != nil {
@@ -164,12 +184,14 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 // @Param id path int true "사이트 ID"
 // @Param req body UpdateSiteRequest true "사이트 수정 정보"
 // @Success 200 {object} SiteResource "사이트 수정 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 404 {object} errors.Error "사이트 없음"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 404 {object} app.Error "사이트 없음"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites/{id} [put]
 // @Tags sites
 func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
@@ -181,7 +203,7 @@ func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.useCase.UpdateSite(uint(id), port.UpdateSite{
+	site, err := handler.useCase.UpdateSite(userId, uint(id), port.UpdateSite{
 		Name: req.Name,
 	})
 
@@ -200,18 +222,20 @@ func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "사이트 ID"
 // @Success 204 {object} SiteResource "사이트 삭제 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 404 {object} errors.Error "사이트 없음"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 404 {object} app.Error "사이트 없음"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites/{id} [delete]
 // @Tags sites
 func (handler *SiteHandler) Delete(ctx *fiber.Ctx) error {
+	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	return handler.useCase.DeleteSite(uint(id))
+	return handler.useCase.DeleteSite(userId, uint(id))
 }
 
 func NewSiteHandler(useCase port.SiteCommandUseCase, query port.SiteQueryUseCase) http.AddRouteFunc {

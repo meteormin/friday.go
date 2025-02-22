@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	_ "github.com/meteormin/friday.go/internal/app/errors"
+	_ "github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
@@ -62,11 +62,11 @@ type AuthHandler struct {
 // @Produce json
 // @Param req body SignupRequest true "회원 가입 정보"
 // @Success 201 {object} UserResource "회원 가입 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청" errors.ErrInvalidUserName
-// @Failure 400 {object} errors.Error "잘못된 요청" errors.ErrInvalidUserUsername
-// @Failure 400 {object} errors.Error "잘못된 요청" errors.ErrInvalidUserPassword
-// @Failure 409 {object} errors.Error "이메일 중복" errors.ErrDuplicateUserUsername
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청" app.ErrInvalidUserName
+// @Failure 400 {object} app.Error "잘못된 요청" app.ErrInvalidUserUsername
+// @Failure 400 {object} app.Error "잘못된 요청" app.ErrInvalidUserPassword
+// @Failure 409 {object} app.Error "이메일 중복" app.ErrDuplicateUserUsername
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/sign-up [post]
 // @Tags auth
 func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
@@ -103,9 +103,9 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param req body SignInRequest true "회원 로그인 정보"
 // @Success 200 {object} TokenResource "회원 로그인 성공"
-// @Failure 400 {object} errors.Error "잘못된 요청"
-// @Failure 401 {object} errors.Error "로그인 실험"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 400 {object} app.Error "잘못된 요청"
+// @Failure 401 {object} app.Error "로그인 실험"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/sign-in [post]
 // @Tags auth
 func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
@@ -144,8 +144,8 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} UserResource "회원 정보 조회 성공"
-// @Failure 401 {object} errors.Error "로그인 정보 없음"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 401 {object} app.Error "로그인 정보 없음"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/me [get]
 // @Tags auth
 func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
@@ -175,7 +175,7 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]bool "회원 관리자 여부 조회 성공"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/has-admin [get]
 // @Tags auth
 func (auth *AuthHandler) hasAdmin(ctx *fiber.Ctx) error {
@@ -209,7 +209,7 @@ type UserHandler struct {
 // @Accept json
 // @Produce json
 // @Success 200 {array} UserResource "회원 리스트 조회 성공"
-// @Failure 500 {object} errors.Error "서버 오류"
+// @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/users [get]
 // @Tags users
 func (handler *UserHandler) fetchUsers(ctx *fiber.Ctx) error {

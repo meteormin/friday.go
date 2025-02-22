@@ -1,7 +1,7 @@
 package port
 
 import (
-	"github.com/meteormin/friday.go/internal/app/errors"
+	"github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/domain"
 )
 
@@ -13,15 +13,15 @@ type CreateUser struct {
 
 func (u CreateUser) Valid() (*domain.User, error) {
 	if u.Name == "" || len(u.Name) < 4 {
-		return nil, errors.ErrInvalidUserName
+		return nil, app.ErrInvalidUserName
 	}
 
 	if u.Username == "" || len(u.Username) < 4 {
-		return nil, errors.ErrInvalidUserUsername
+		return nil, app.ErrInvalidUserUsername
 	}
 
 	if u.Password == "" || len(u.Password) < 8 {
-		return nil, errors.ErrInvalidUserPassword
+		return nil, app.ErrInvalidUserPassword
 	}
 
 	return &domain.User{Name: u.Name, Username: u.Username, Password: u.Password}, nil
@@ -34,11 +34,11 @@ type UpdateUser struct {
 
 func (u UpdateUser) Valid() (*domain.User, error) {
 	if u.Name == "" || len(u.Name) < 4 {
-		return nil, errors.ErrInvalidUserName
+		return nil, app.ErrInvalidUserName
 	}
 
 	if u.Password == "" || len(u.Password) < 8 {
-		return nil, errors.ErrInvalidUserPassword
+		return nil, app.ErrInvalidUserPassword
 	}
 
 	return &domain.User{Name: u.Name, Password: u.Password}, nil

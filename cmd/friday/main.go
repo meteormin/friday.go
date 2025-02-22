@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/meteormin/friday.go/api"
 	"github.com/meteormin/friday.go/internal/adapter/rest"
-	_ "github.com/meteormin/friday.go/internal/boot"
+	"github.com/meteormin/friday.go/internal/bootstrap"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
 	"os"
@@ -32,6 +32,9 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	// initialize app
+	bootstrap.Initialize()
+
 	cfg := core.GetConfig()
 
 	l := core.GetLogger()

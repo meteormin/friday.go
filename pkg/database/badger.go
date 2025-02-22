@@ -9,12 +9,14 @@ type BadgerConfig struct {
 	Path       string `json:"path" yaml:"path"`
 	CacheSize  int64  `json:"cacheSize" yaml:"cacheSize"`
 	EncryptKey []byte `json:"encryptKey" yaml:"encryptKey"`
+	InMemory   bool   `json:"in-memory" yaml:"in-memory"`
 }
 
 func NewBadger(cfg BadgerConfig) (*badger.DB, error) {
-	opts := badger.DefaultOptions(cfg.Path)
-	opts.EncryptionKey = cfg.EncryptKey
-	opts.IndexCacheSize = cfg.CacheSize << 20
+	opts := badger.DefaultOptions(cfg.Path).
+		WithInMemory(cfg.InMemory).
+		WithEncryptionKey(cfg.EncryptKey).
+		WithIndexCacheSize(cfg.CacheSize << 20)
 	return badger.Open(opts)
 }
 

@@ -1,4 +1,4 @@
-package errors
+package app
 
 type Error struct {
 	Code    int
@@ -18,9 +18,14 @@ func NewError(code int, title, message string) *Error {
 	}
 }
 
+// Commons
+var (
+	ErrForbidden = NewError(403, "Forbidden", "forbidden")
+	ErrNotFound  = NewError(404, "NotFound", "not found")
+)
+
 // User
 var (
-	ErrForbidden             = NewError(403, "Forbidden", "forbidden")
 	ErrInvalidUserName       = NewError(400, "InvalidUserName", "invalid name")
 	ErrInvalidUserUsername   = NewError(400, "InvalidUserUsername", "invalid username")
 	ErrInvalidUserPassword   = NewError(400, "InvalidUserPassword", "invalid password")

@@ -13,17 +13,18 @@ type PostRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (p *PostRepositoryImpl) HasAccessPermission(id uint, userId uint) (bool, error) {
-	var ent entity.Post
-
-	if err := p.db.Preload(clause.Associations).First(&ent, id).Error; err != nil {
+func (p *PostRepositoryImpl) HasAccessPermission(userId, id uint) (bool, error) {
+	var count int64
+	if err := p.db.Preload("Site", "user_id = ?", userId).
+		Where("id = ?", id).
+		Count(&count).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
 		return false, err
 	}
 
-	return ent.Site.UserID == userId, nil
+	return count > 0, nil
 }
 
 func (p *PostRepositoryImpl) ExistsPostByPath(siteId uint, path string) (bool, error) {
@@ -116,10 +117,13 @@ func (p *PostRepositoryImpl) FindPost(id uint) (*domain.Post, error) {
 	return mapToPostModel(ent), nil
 }
 
-func (p *PostRepositoryImpl) RetrievePosts(query string) ([]domain.Post, error) {
+func (p *PostRepositoryImpl) RetrievePosts(userId uint, query string) ([]domain.Post, error) {
 	var posts []entity.Post
 
-	tx := p.db.Preload(clause.Associations).Where("title LIKE ?", "%"+query+"% OR content LIKE ?", "%"+query+"%").
+	tx := p.db.Preload("Site", "user_id = ?", userId).
+		Preload("File").
+		Preload("Tags").
+		Where("title LIKE ?", "%"+query+"% OR content LIKE ?", "%"+query+"%").
 		Find(&posts)
 
 	if err := tx.Error; err != nil {

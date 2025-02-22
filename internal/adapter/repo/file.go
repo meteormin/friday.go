@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"github.com/dgraph-io/badger/v4"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core/db/entity"
@@ -13,6 +14,20 @@ type FileRepositoryImpl struct {
 	basePath string
 	db       *gorm.DB
 	storage  *badger.DB
+}
+
+func (f FileRepositoryImpl) HasAccessPermission(userId, fileID uint) (bool, error) {
+	var count int64
+	if err := f.db.Preload("User", "id = ?", userId).
+		Where("id = ?", fileID).
+		Count(&count).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 func (f FileRepositoryImpl) FindFile(id uint) ([]byte, *domain.File, error) {

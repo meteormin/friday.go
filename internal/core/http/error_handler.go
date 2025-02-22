@@ -3,7 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	apperrors "github.com/meteormin/friday.go/internal/app/errors"
+	apperrors "github.com/meteormin/friday.go/internal/app"
 	"gorm.io/gorm"
 )
 
