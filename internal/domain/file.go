@@ -7,4 +7,5 @@ type File struct {
 	MimeType   string
 	Size       uint64
 	FilePath   string
+	User       User
 }

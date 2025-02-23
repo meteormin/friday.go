@@ -71,6 +71,7 @@ func mapToFileEntity(model *domain.File) entity.File {
 		Path:           model.FilePath,
 		MimeType:       model.MimeType,
 		Size:           model.Size,
+		UserID:         model.User.ID,
 	}
 }
 
@@ -82,5 +83,6 @@ func mapToFileModel(ent entity.File) *domain.File {
 		MimeType:   ent.MimeType,
 		Size:       ent.Size,
 		FilePath:   ent.Path,
+		User:       *mapToUserModel(ent.User),
 	}
 }

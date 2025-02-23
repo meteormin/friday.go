@@ -58,3 +58,44 @@ func TestFileRepositoryImpl_CreateFile(t *testing.T) {
 
 	tx.Rollback()
 }
+
+func TestFileRepositoryImpl_FindFile(t *testing.T) {
+	assert.NotNil(t, db)
+
+	tx := db.Begin()
+	repo := NewFileRepository("test", tx, setupBadger(t))
+
+	newUUID, err := uuid.NewUUID()
+
+	assert.Nil(t, err)
+
+	created, err := repo.CreateFile(&domain.File{
+		OriginName: "test",
+		ConvName:   newUUID.String(),
+		Size:       1024,
+		MimeType:   "text/plain",
+		FilePath:   "tmp",
+	}, generatePseudoRandomBytes(1024))
+
+	if err != nil {
+		tx.Rollback()
+		assert.Error(t, err)
+	}
+
+	_, file, err := repo.FindFile(created.ID)
+
+	if err != nil {
+		tx.Rollback()
+		assert.Error(t, err)
+	}
+
+	assert.NotNil(t, file)
+
+	assert.Equal(t, "test", file.OriginName)
+	assert.Equal(t, newUUID.String(), file.ConvName)
+	assert.Equal(t, 1024, int(file.Size))
+	assert.Equal(t, "text/plain", file.MimeType)
+	assert.Equal(t, "tmp", file.FilePath)
+
+	tx.Rollback()
+}
