@@ -34,5 +34,9 @@ func LoadWithViper(in string, appInfo App) *Config {
 		cfg.App.Version = appInfo.Version
 	}
 
+	if err := cfg.Path.mkdir(); err != nil {
+		log.Fatal(err)
+	}
+
 	return &cfg
 }

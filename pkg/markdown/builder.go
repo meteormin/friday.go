@@ -1,34 +1,34 @@
 package markdown
 
 import (
-	"github.com/meteormin/friday.go/pkg/markdown/component"
+	"github.com/meteormin/friday.go/pkg/markdown/components"
 	"strings"
 )
 
 type Builder struct {
-	components []component.Component
+	components []components.Component
 }
 
-func (b *Builder) Append(c component.Component) {
+func (b *Builder) Append(c components.Component) {
 	b.components = append(b.components, c)
 }
 
 func (b *Builder) NewLine() {
-	txt := component.NewText()
+	txt := components.NewText()
 	txt.WriteString("\n")
 
 	b.components = append(b.components, txt)
 }
 
 func (b *Builder) HorizontalRule() {
-	txt := component.NewText()
+	txt := components.NewText()
 	txt.WriteString("\n---\n")
 
 	b.components = append(b.components, txt)
 }
 
 func (b *Builder) WriteString(s string) {
-	txt := component.NewText()
+	txt := components.NewText()
 	txt.WriteString(s)
 
 	b.components = append(b.components, txt)
@@ -43,11 +43,11 @@ func (b *Builder) String() string {
 }
 
 func (b *Builder) Clear() {
-	b.components = []component.Component{}
+	b.components = []components.Component{}
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		components: []component.Component{},
+		components: []components.Component{},
 	}
 }

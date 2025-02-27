@@ -2,11 +2,12 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 	_ "github.com/meteormin/friday.go/internal/app"
 	"github.com/meteormin/friday.go/internal/app/port"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/http"
+	"github.com/meteormin/friday.go/internal/core/http/middleware"
 	"time"
 )
 
@@ -36,11 +37,11 @@ type UpdateUserRequest struct {
 // UserResource
 // @Description 회원 정보 리소스
 type UserResource struct {
-	ID        uint      `json:"id"`
-	Name      string    `json:"name"`
-	Username  string    `json:"username"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        uint           `json:"id"`
+	Name      string         `json:"name"`
+	Username  string         `json:"username"`
+	CreatedAt *http.DateTime `json:"createdAt"`
+	UpdatedAt *http.DateTime `json:"updatedAt"`
 }
 
 // TokenResource
@@ -91,8 +92,8 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 			ID:        user.ID,
 			Name:      user.Name,
 			Username:  user.Username,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
+			CreatedAt: http.NewDateTime(user.CreatedAt),
+			UpdatedAt: http.NewDateTime(user.UpdatedAt),
 		})
 }
 
@@ -148,6 +149,7 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/me [get]
 // @Tags auth
+// @Security BearerAuth
 func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 	token, ok := ctx.Locals("user").(*jwt.Token)
 	if token == nil || !ok {
@@ -164,8 +166,8 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 		ID:        user.ID,
 		Name:      user.Name,
 		Username:  user.Username,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		CreatedAt: http.NewDateTime(user.CreatedAt),
+		UpdatedAt: http.NewDateTime(user.UpdatedAt),
 	})
 }
 
@@ -193,8 +195,9 @@ func NewAuthHandler(useCase port.UserCommandUseCase, query port.UserQueryUseCase
 		group := router.Group("/auth")
 		group.Post("/sign-up", handler.signUp)
 		group.Post("/sign-in", handler.signIn)
-		group.Get("/me", handler.me)
 		group.Get("/has-admin", handler.hasAdmin)
+		middleware.NewJwtGuard(group)
+		group.Get("/me", handler.me)
 	}
 }
 

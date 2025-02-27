@@ -66,6 +66,7 @@ type SiteHandler struct {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites [get]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -94,6 +95,7 @@ func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Failure 404 {object} app.Error "사이트 없음"
 // @Router /api/sites/{id} [get]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -122,6 +124,7 @@ func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
 // @Failure 404 {object} app.Error "사이트 없음"
 // @Router /api/sites/{id}/posts [get]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -151,6 +154,7 @@ func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites [post]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -189,6 +193,7 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites/{id} [put]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -227,6 +232,7 @@ func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/sites/{id} [delete]
 // @Tags sites
+// @Security BearerAuth
 func (handler *SiteHandler) Delete(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 

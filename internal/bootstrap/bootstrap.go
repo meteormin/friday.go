@@ -22,9 +22,9 @@ const (
 	appVersion = "0.0.1"
 )
 
-func Initialize() {
+func Initialize(cfgPath string) {
 
-	cfg := config.LoadWithViper("config.yml", config.App{
+	cfg := config.LoadWithViper(cfgPath, config.App{
 		Name:    appName,
 		Version: appVersion,
 	})

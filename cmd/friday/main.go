@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/meteormin/friday.go/api"
 	"github.com/meteormin/friday.go/internal/adapter/rest"
@@ -32,8 +33,11 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	cfgPath := flag.String("config", "config.yml", "path to config file")
+	flag.Parse()
+
 	// initialize app
-	bootstrap.Initialize()
+	bootstrap.Initialize(*cfgPath)
 
 	cfg := core.GetConfig()
 

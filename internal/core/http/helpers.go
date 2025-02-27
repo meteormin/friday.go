@@ -8,18 +8,6 @@ import (
 	"time"
 )
 
-type ContentResource[T interface{}] struct {
-	Content []T `json:"content"`
-	Length  int `json:"length"`
-}
-
-func NewContentResource[T interface{}](content []T) ContentResource[T] {
-	return ContentResource[T]{
-		Content: content,
-		Length:  len(content),
-	}
-}
-
 // GenerateToken JWT 토큰 생성 함수
 func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, error) {
 	var user entity.User
@@ -37,7 +25,7 @@ func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, er
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString(core.GetConfig().Server.Jwt.Secret)
+	return token.SignedString([]byte(core.GetConfig().Server.Jwt.Secret))
 }
 
 func ExtractTokenClaims(ctx *fiber.Ctx) jwt.MapClaims {

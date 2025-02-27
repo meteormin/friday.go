@@ -76,6 +76,7 @@ type PostHandler struct {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts [get]
 // @Tags posts
+// @Security BearerAuth
 func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 	posts, err := h.query.RetrievePosts(userId, ctx.Query("query"))
@@ -103,6 +104,7 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [get]
 // @Tags posts
+// @Security BearerAuth
 func (h PostHandler) Find(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -132,6 +134,7 @@ func (h PostHandler) Find(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts [post]
 // @Tags posts
+// @Security BearerAuth
 func (h PostHandler) Create(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -169,6 +172,7 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [put]
 // @Tags posts
+// @Security BearerAuth
 func (h PostHandler) Update(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -208,6 +212,7 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/posts/{id} [delete]
 // @Tags posts
+// @Security BearerAuth
 func (h PostHandler) Delete(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 

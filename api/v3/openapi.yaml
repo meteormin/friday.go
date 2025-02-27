@@ -16,6 +16,28 @@ tags:
 - name: upload-file
 - name: posts
 paths:
+  /api/auth/has-admin:
+    get:
+      description: 회원 관리자 여부 조회 API
+      operationId: has-admin
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: boolean
+                type: object
+          description: 회원 관리자 여부 조회 성공
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 서버 오류
+      summary: 회원 관리자 여부 조회
+      tags:
+      - auth
   /api/auth/me:
     get:
       description: 회원 정보 조회 API
@@ -25,20 +47,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.UserResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.UserResource'
           description: 회원 정보 조회 성공
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 로그인 정보 없음
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 회원 정보 조회
       tags:
       - auth
@@ -50,7 +74,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.SignInRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.SignInRequest'
         description: 회원 로그인 정보
         required: true
       responses:
@@ -58,25 +82,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.TokenResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.TokenResource'
           description: 회원 로그인 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 로그인 실험
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
       summary: 회원 로그인
       tags:
@@ -90,7 +114,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.SignupRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.SignupRequest'
         description: 회원 가입 정보
         required: true
       responses:
@@ -98,25 +122,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.UserResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.UserResource'
           description: 회원 가입 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
-          description: 잘못된 요청" errors.ErrInvalidUserPassword
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 잘못된 요청" app.ErrInvalidUserPassword
         "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
-          description: 이메일 중복" errors.ErrDuplicateUserUsername
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 이메일 중복" app.ErrDuplicateUserUsername
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
       summary: 회원 가입
       tags:
@@ -132,15 +156,17 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                  $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
                 type: array
           description: 포스트 리스트 조회 성공
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 포스트 리스트 조회
       tags:
       - posts
@@ -151,7 +177,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.CreatePostRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.CreatePostRequest'
         description: 포스트 생성 정보
         required: true
       responses:
@@ -159,26 +185,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
           description: 포스트 생성 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 이메일 중복
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 포스트 생성
       tags:
       - posts
@@ -199,20 +227,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
           description: 포스트 삭제 성공
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 존재하지 않는 포스트
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 포스트 삭제
       tags:
       - posts
@@ -231,20 +261,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
           description: 포스트 조회 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 포스트 조회
       tags:
       - posts
@@ -262,7 +294,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.UpdatePostRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.UpdatePostRequest'
         description: 포스트 수정 정보
         required: true
       responses:
@@ -270,25 +302,56 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
           description: 포스트 수정 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 포스트 수정
       tags:
       - posts
       x-codegen-request-body-name: req
   /api/sites:
+    get:
+      description: 사이트 리스트 조회 API
+      operationId: sites.retrieve
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/internal_adapter_rest_handler.SiteResource'
+                type: array
+          description: 사이트 리스트 조회 성공
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 잘못된 요청
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 서버 오류
+      security:
+      - BearerAuth: []
+      summary: 사이트 리스트 조회
+      tags:
+      - sites
     post:
       description: 사이트 생성 API
       operationId: sites.create
@@ -296,7 +359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.CreateSiteRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.CreateSiteRequest'
         description: 사이트 생성 정보
         required: true
       responses:
@@ -304,26 +367,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.SiteResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.SiteResource'
           description: 사이트 생성 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 이메일 중복
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 사이트 생성
       tags:
       - sites
@@ -344,26 +409,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.SiteResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.SiteResource'
           description: 사이트 삭제 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 사이트 없음
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 사이트 삭제
       tags:
       - sites
@@ -382,20 +449,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.SiteResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.SiteResource'
           description: 사이트 조회 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 사이트 없음
+      security:
+      - BearerAuth: []
       summary: 사이트 조회
       tags:
       - sites
@@ -413,7 +482,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/internal_adapter_rest.UpdateSiteRequest'
+              $ref: '#/components/schemas/internal_adapter_rest_handler.UpdateSiteRequest'
         description: 사이트 수정 정보
         required: true
       responses:
@@ -421,26 +490,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.SiteResource'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.SiteResource'
           description: 사이트 수정 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 사이트 없음
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 사이트 수정
       tags:
       - sites
@@ -462,21 +533,23 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/internal_adapter_rest.PostResource'
+                  $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
                 type: array
           description: 사이트 포스트 리스트 조회 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 사이트 없음
+      security:
+      - BearerAuth: []
       summary: 사이트 포스트 리스트 조회
       tags:
       - sites
@@ -495,21 +568,66 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/internal_adapter_rest.UploadFileResponse'
+                $ref: '#/components/schemas/internal_adapter_rest_handler.UploadFileResponse'
           description: 파일 업로드 성공
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 잘못된 요청
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
+      security:
+      - BearerAuth: []
       summary: 파일 업로드
+      tags:
+      - upload-file
+  /api/upload-file/{id}:
+    get:
+      description: 파일 다운로드 API
+      operationId: files.download
+      parameters:
+      - description: 파일 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                items:
+                  type: integer
+                type: array
+          description: 파일 다운로드 성공
+        "400":
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 잘못된 요청
+        "404":
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 파일 없음
+        "500":
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
+          description: 서버 오류
+      security:
+      - BearerAuth: []
+      summary: 파일 다운로드
       tags:
       - upload-file
   /api/users:
@@ -522,21 +640,21 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/internal_adapter_rest.UserResource'
+                  $ref: '#/components/schemas/internal_adapter_rest_handler.UserResource'
                 type: array
           description: 회원 리스트 조회 성공
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app_errors.Error'
+                $ref: '#/components/schemas/github_com_meteormin_friday_go_internal_app.Error'
           description: 서버 오류
       summary: 회원 리스트 조회
       tags:
       - users
 components:
   schemas:
-    github_com_meteormin_friday_go_internal_app_errors.Error:
+    github_com_meteormin_friday_go_internal_app.Error:
       example:
         code: 0
         message: message
@@ -549,7 +667,7 @@ components:
         title:
           type: string
       type: object
-    internal_adapter_rest.CreatePostRequest:
+    internal_adapter_rest_handler.CreatePostRequest:
       description: 생성 요청
       properties:
         content:
@@ -565,21 +683,22 @@ components:
         title:
           type: string
       type: object
-    internal_adapter_rest.CreateSiteRequest:
+    internal_adapter_rest_handler.CreateSiteRequest:
       properties:
         host:
           type: string
         name:
           type: string
       type: object
-    internal_adapter_rest.PostResource:
+    internal_adapter_rest_handler.PostResource:
       example:
         updated_at: updated_at
         created_at: created_at
-        id: 0
+        id: 6
         title: title
         uri: uri
         content: content
+        fileId: 0
         tags:
         - tags
         - tags
@@ -588,6 +707,8 @@ components:
           type: string
         created_at:
           type: string
+        fileId:
+          type: integer
         id:
           type: integer
         tags:
@@ -601,7 +722,7 @@ components:
         uri:
           type: string
       type: object
-    internal_adapter_rest.SignInRequest:
+    internal_adapter_rest_handler.SignInRequest:
       description: 로그인 요청
       properties:
         password:
@@ -609,9 +730,11 @@ components:
         username:
           type: string
       type: object
-    internal_adapter_rest.SignupRequest:
+    internal_adapter_rest_handler.SignupRequest:
       description: 가입 요청
       properties:
+        id:
+          type: integer
         name:
           type: string
         password:
@@ -619,20 +742,51 @@ components:
         username:
           type: string
       type: object
-    internal_adapter_rest.SiteResource:
+    internal_adapter_rest_handler.SiteResource:
       example:
+        createdAt: createdAt
         host: host
         name: name
         id: 0
+        posts:
+        - updated_at: updated_at
+          created_at: created_at
+          id: 6
+          title: title
+          uri: uri
+          content: content
+          fileId: 0
+          tags:
+          - tags
+          - tags
+        - updated_at: updated_at
+          created_at: created_at
+          id: 6
+          title: title
+          uri: uri
+          content: content
+          fileId: 0
+          tags:
+          - tags
+          - tags
+        updatedAt: updatedAt
       properties:
+        createdAt:
+          type: string
         host:
           type: string
         id:
           type: integer
         name:
           type: string
+        posts:
+          items:
+            $ref: '#/components/schemas/internal_adapter_rest_handler.PostResource'
+          type: array
+        updatedAt:
+          type: string
       type: object
-    internal_adapter_rest.TokenResource:
+    internal_adapter_rest_handler.TokenResource:
       description: 토큰 정보 리소스
       example:
         exp: 0
@@ -643,7 +797,7 @@ components:
         token:
           type: string
       type: object
-    internal_adapter_rest.UpdatePostRequest:
+    internal_adapter_rest_handler.UpdatePostRequest:
       properties:
         content:
           type: string
@@ -656,31 +810,34 @@ components:
         title:
           type: string
       type: object
-    internal_adapter_rest.UpdateSiteRequest:
+    internal_adapter_rest_handler.UpdateSiteRequest:
       properties:
         name:
           type: string
       type: object
-    internal_adapter_rest.UploadFileResponse:
+    internal_adapter_rest_handler.UploadFileResponse:
       example:
         id: 0
-        url: url
+        uri: uri
       properties:
         id:
           type: integer
-        url:
+        uri:
           type: string
       type: object
-    internal_adapter_rest.UserResource:
+    internal_adapter_rest_handler.UserResource:
       description: 회원 정보 리소스
       example:
         createdAt: createdAt
         name: name
+        id: 0
         updatedAt: updatedAt
         username: username
       properties:
         createdAt:
           type: string
+        id:
+          type: integer
         name:
           type: string
         updatedAt:

@@ -4,6 +4,7 @@ import (
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
 	"github.com/meteormin/friday.go/pkg/scheduler"
+	"os"
 )
 
 type Env string
@@ -23,6 +24,45 @@ type Path struct {
 	Data   string `json:"data" yaml:"data"`
 	Log    string `json:"log" yaml:"log"`
 	Secret string `json:"secret" yaml:"secret"`
+}
+
+func (p Path) mkdir() error {
+	if p.Data == "" {
+		p.Data = "./data"
+	}
+
+	if p.Log == "" {
+		p.Log = "./logs"
+	}
+
+	if p.Secret == "" {
+		p.Secret = "./secret"
+	}
+
+	if err := mkdirAll(p.Data); err != nil {
+		return err
+	}
+
+	if err := mkdirAll(p.Log); err != nil {
+		return err
+	}
+
+	if err := mkdirAll(p.Secret); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func mkdirAll(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			if err = os.MkdirAll(path, 0755); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 type Server struct {

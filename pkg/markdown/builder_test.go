@@ -13,7 +13,7 @@ import (
 
 func TestBuilder_Append(t *testing.T) {
 	type args struct {
-		c component.Component
+		c components.Component
 	}
 	tests := []struct {
 		name string
@@ -22,31 +22,31 @@ func TestBuilder_Append(t *testing.T) {
 		{
 			name: "Alert: NOTE",
 			args: args{
-				c: component.NewAlert(component.NOTE, "This is a note"),
+				c: components.NewAlert(components.NOTE, "This is a note"),
 			},
 		},
 		{
 			name: "Alert: TIP",
 			args: args{
-				c: component.NewAlert(component.TIP, "This is a tip"),
+				c: components.NewAlert(components.TIP, "This is a tip"),
 			},
 		},
 		{
 			name: "Alert: WARNING",
 			args: args{
-				c: component.NewAlert(component.WARNING, "This is a warning"),
+				c: components.NewAlert(components.WARNING, "This is a warning"),
 			},
 		},
 		{
 			name: "Alert: IMPORTANT",
 			args: args{
-				c: component.NewAlert(component.IMPORTANT, "This is important"),
+				c: components.NewAlert(components.IMPORTANT, "This is important"),
 			},
 		},
 	}
 	for _, tt := range tests {
 		b := &Builder{
-			components: []component.Component{},
+			components: []components.Component{},
 		}
 
 		t.Run(tt.name, func(t *testing.T) {
@@ -59,7 +59,7 @@ func TestBuilder_Append(t *testing.T) {
 
 func TestBuilder_Clear(t *testing.T) {
 	type fields struct {
-		components []component.Component
+		components []components.Component
 	}
 	tests := []struct {
 		name   string
@@ -79,7 +79,7 @@ func TestBuilder_Clear(t *testing.T) {
 
 func TestBuilder_HorizontalRule(t *testing.T) {
 	type fields struct {
-		components []component.Component
+		components []components.Component
 	}
 	tests := []struct {
 		name   string
@@ -88,7 +88,7 @@ func TestBuilder_HorizontalRule(t *testing.T) {
 		{
 			name: "HorizontalRule",
 			fields: fields{
-				components: []component.Component{},
+				components: []components.Component{},
 			},
 		},
 	}
@@ -105,7 +105,7 @@ func TestBuilder_HorizontalRule(t *testing.T) {
 
 func TestBuilder_NewLine(t *testing.T) {
 	type fields struct {
-		components []component.Component
+		components []components.Component
 	}
 	tests := []struct {
 		name   string
@@ -114,7 +114,7 @@ func TestBuilder_NewLine(t *testing.T) {
 		{
 			name: "NewLine",
 			fields: fields{
-				components: []component.Component{},
+				components: []components.Component{},
 			},
 		},
 	}
@@ -131,7 +131,7 @@ func TestBuilder_NewLine(t *testing.T) {
 
 func TestBuilder_String(t *testing.T) {
 	type fields struct {
-		components []component.Component
+		components []components.Component
 	}
 	tests := []struct {
 		name   string
@@ -141,7 +141,7 @@ func TestBuilder_String(t *testing.T) {
 		{
 			name: "Empty",
 			fields: fields{
-				components: []component.Component{},
+				components: []components.Component{},
 			},
 			want: "",
 		},
@@ -160,7 +160,7 @@ func TestBuilder_String(t *testing.T) {
 
 func TestBuilder_WriteString(t *testing.T) {
 	type fields struct {
-		components []component.Component
+		components []components.Component
 	}
 	type args struct {
 		s string
@@ -173,7 +173,7 @@ func TestBuilder_WriteString(t *testing.T) {
 		{
 			name: "WriteString",
 			fields: fields{
-				components: []component.Component{},
+				components: []components.Component{},
 			},
 			args: args{
 				s: "Hello, World!",
@@ -198,7 +198,7 @@ func TestNewBuilder(t *testing.T) {
 		{
 			name: "NewBuilder",
 			want: &Builder{
-				components: []component.Component{},
+				components: []components.Component{},
 			},
 		},
 	}
@@ -213,10 +213,10 @@ func TestNewBuilder(t *testing.T) {
 
 func TestBuilder_Table(t *testing.T) {
 	b := &Builder{
-		components: []component.Component{},
+		components: []components.Component{},
 	}
 
-	table := component.NewTable()
+	table := components.NewTable()
 	table.Header([]string{"ID", "Name", "Age", "Address"})
 	table.Append([]string{"1", "Alice", "20", "New York"})
 	table.Append([]string{"2", "Bob", "25", "Los Angeles"})
@@ -231,10 +231,10 @@ func TestBuilder_Table(t *testing.T) {
 
 func TestMdToHtml(t *testing.T) {
 	b := &Builder{
-		components: []component.Component{},
+		components: []components.Component{},
 	}
 
-	table := component.NewTable()
+	table := components.NewTable()
 	table.Header([]string{"ID", "Name", "Age", "Address"})
 	table.Append([]string{"1", "Alice", "20", "New York"})
 	table.Append([]string{"2", "Bob", "25", "Los Angeles"})
@@ -242,7 +242,7 @@ func TestMdToHtml(t *testing.T) {
 	table.Append([]string{"4", "David", "35", "Houston"})
 	table.Append([]string{"5", "Eve", "40", "Philadelphia"})
 
-	b.Append(component.NewHeader(0, "Table"))
+	b.Append(components.NewHeader(0, "Table"))
 	b.Append(table)
 
 	var buf bytes.Buffer

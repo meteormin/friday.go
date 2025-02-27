@@ -19,8 +19,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/has-admin": {
+            "get": {
+                "description": "회원 관리자 여부 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "회원 관리자 여부 조회",
+                "operationId": "has-admin",
+                "responses": {
+                    "200": {
+                        "description": "회원 관리자 여부 조회 성공",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/me": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "회원 정보 조회 API",
                 "consumes": [
                     "application/json"
@@ -37,19 +75,19 @@ const docTemplate = `{
                     "200": {
                         "description": "회원 정보 조회 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.UserResource"
                         }
                     },
                     "401": {
                         "description": "로그인 정보 없음",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -76,7 +114,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SignInRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SignInRequest"
                         }
                     }
                 ],
@@ -84,25 +122,25 @@ const docTemplate = `{
                     "200": {
                         "description": "회원 로그인 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.TokenResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.TokenResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "401": {
                         "description": "로그인 실험",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -129,7 +167,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SignupRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SignupRequest"
                         }
                     }
                 ],
@@ -137,25 +175,25 @@ const docTemplate = `{
                     "201": {
                         "description": "회원 가입 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.UserResource"
                         }
                     },
                     "400": {
-                        "description": "잘못된 요청\" errors.ErrInvalidUserPassword",
+                        "description": "잘못된 요청\" app.ErrInvalidUserPassword",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "409": {
-                        "description": "이메일 중복\" errors.ErrDuplicateUserUsername",
+                        "description": "이메일 중복\" app.ErrDuplicateUserUsername",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -163,6 +201,11 @@ const docTemplate = `{
         },
         "/api/posts": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "포스트 리스트 조회 API",
                 "consumes": [
                     "application/json"
@@ -181,19 +224,24 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                                "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                             }
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "포스트 생성 API",
                 "consumes": [
                     "application/json"
@@ -213,7 +261,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.CreatePostRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.CreatePostRequest"
                         }
                     }
                 ],
@@ -221,25 +269,25 @@ const docTemplate = `{
                     "201": {
                         "description": "포스트 생성 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "409": {
                         "description": "이메일 중복",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -247,6 +295,11 @@ const docTemplate = `{
         },
         "/api/posts/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "포스트 조회 API",
                 "consumes": [
                     "application/json"
@@ -272,24 +325,29 @@ const docTemplate = `{
                     "200": {
                         "description": "포스트 조회 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "포스트 수정 API",
                 "consumes": [
                     "application/json"
@@ -316,7 +374,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UpdatePostRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.UpdatePostRequest"
                         }
                     }
                 ],
@@ -324,24 +382,29 @@ const docTemplate = `{
                     "200": {
                         "description": "포스트 수정 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "포스트 삭제 API",
                 "consumes": [
                     "application/json"
@@ -367,26 +430,73 @@ const docTemplate = `{
                     "204": {
                         "description": "포스트 삭제 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                         }
                     },
                     "404": {
                         "description": "존재하지 않는 포스트",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             }
         },
         "/api/sites": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "사이트 리스트 조회 API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "사이트 리스트 조회",
+                "operationId": "sites.retrieve",
+                "responses": {
+                    "200": {
+                        "description": "사이트 리스트 조회 성공",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_adapter_rest_handler.SiteResource"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    }
+                }
+            },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "사이트 생성 API",
                 "consumes": [
                     "application/json"
@@ -406,7 +516,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.CreateSiteRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.CreateSiteRequest"
                         }
                     }
                 ],
@@ -414,25 +524,25 @@ const docTemplate = `{
                     "201": {
                         "description": "사이트 생성 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SiteResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "409": {
                         "description": "이메일 중복",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -440,6 +550,11 @@ const docTemplate = `{
         },
         "/api/sites/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "사이트 조회 API",
                 "consumes": [
                     "application/json"
@@ -465,24 +580,29 @@ const docTemplate = `{
                     "200": {
                         "description": "사이트 조회 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SiteResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "404": {
                         "description": "사이트 없음",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "사이트 수정 API",
                 "consumes": [
                     "application/json"
@@ -509,7 +629,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UpdateSiteRequest"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.UpdateSiteRequest"
                         }
                     }
                 ],
@@ -517,30 +637,35 @@ const docTemplate = `{
                     "200": {
                         "description": "사이트 수정 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SiteResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "404": {
                         "description": "사이트 없음",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "사이트 삭제 API",
                 "consumes": [
                     "application/json"
@@ -566,25 +691,25 @@ const docTemplate = `{
                     "204": {
                         "description": "사이트 삭제 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.SiteResource"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.SiteResource"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "404": {
                         "description": "사이트 없음",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -592,6 +717,11 @@ const docTemplate = `{
         },
         "/api/sites/{id}/posts": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "사이트 포스트 리스트 조회 API",
                 "consumes": [
                     "application/json"
@@ -619,20 +749,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_adapter_rest.PostResource"
+                                "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
                             }
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "404": {
                         "description": "사이트 없음",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -640,6 +770,11 @@ const docTemplate = `{
         },
         "/api/upload-file": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "파일 업로드 API",
                 "consumes": [
                     "multipart/form-data"
@@ -665,19 +800,75 @@ const docTemplate = `{
                     "201": {
                         "description": "파일 업로드 성공",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_rest.UploadFileResponse"
+                            "$ref": "#/definitions/internal_adapter_rest_handler.UploadFileResponse"
                         }
                     },
                     "400": {
                         "description": "잘못된 요청",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload-file/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "파일 다운로드 API",
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "upload-file"
+                ],
+                "summary": "파일 다운로드",
+                "operationId": "files.download",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "파일 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "파일 다운로드 성공",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "파일 없음",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -703,14 +894,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_adapter_rest.UserResource"
+                                "$ref": "#/definitions/internal_adapter_rest_handler.UserResource"
                             }
                         }
                     },
                     "500": {
                         "description": "서버 오류",
                         "schema": {
-                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app_errors.Error"
+                            "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
                     }
                 }
@@ -718,7 +909,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_meteormin_friday_go_internal_app_errors.Error": {
+        "github_com_meteormin_friday_go_internal_app.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -732,7 +923,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.CreatePostRequest": {
+        "internal_adapter_rest_handler.CreatePostRequest": {
             "description": "생성 요청",
             "type": "object",
             "properties": {
@@ -756,7 +947,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.CreateSiteRequest": {
+        "internal_adapter_rest_handler.CreateSiteRequest": {
             "type": "object",
             "properties": {
                 "host": {
@@ -767,7 +958,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.PostResource": {
+        "internal_adapter_rest_handler.PostResource": {
             "type": "object",
             "properties": {
                 "content": {
@@ -775,6 +966,9 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "fileId": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -796,7 +990,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.SignInRequest": {
+        "internal_adapter_rest_handler.SignInRequest": {
             "description": "로그인 요청",
             "type": "object",
             "properties": {
@@ -808,10 +1002,13 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.SignupRequest": {
+        "internal_adapter_rest_handler.SignupRequest": {
             "description": "가입 요청",
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -823,9 +1020,12 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.SiteResource": {
+        "internal_adapter_rest_handler.SiteResource": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -834,10 +1034,19 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_adapter_rest_handler.PostResource"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
-        "internal_adapter_rest.TokenResource": {
+        "internal_adapter_rest_handler.TokenResource": {
             "description": "토큰 정보 리소스",
             "type": "object",
             "properties": {
@@ -849,7 +1058,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.UpdatePostRequest": {
+        "internal_adapter_rest_handler.UpdatePostRequest": {
             "type": "object",
             "properties": {
                 "content": {
@@ -869,7 +1078,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.UpdateSiteRequest": {
+        "internal_adapter_rest_handler.UpdateSiteRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -877,23 +1086,26 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_rest.UploadFileResponse": {
+        "internal_adapter_rest_handler.UploadFileResponse": {
             "type": "object",
             "properties": {
                 "id": {
                     "type": "integer"
                 },
-                "url": {
+                "uri": {
                     "type": "string"
                 }
             }
         },
-        "internal_adapter_rest.UserResource": {
+        "internal_adapter_rest_handler.UserResource": {
             "description": "회원 정보 리소스",
             "type": "object",
             "properties": {
                 "createdAt": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

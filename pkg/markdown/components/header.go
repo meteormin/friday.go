@@ -1,4 +1,4 @@
-package component
+package components
 
 type Header struct {
 	*Text

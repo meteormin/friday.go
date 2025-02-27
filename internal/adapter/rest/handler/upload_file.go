@@ -32,6 +32,7 @@ type UploadFileHandler struct {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/upload-file [post]
 // @Tags upload-file
+// @Security BearerAuth
 func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 
@@ -86,6 +87,7 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/upload-file/{id} [get]
 // @Tags upload-file
+// @Security BearerAuth
 func (handler *UploadFileHandler) downloadFile(ctx *fiber.Ctx) error {
 	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
 

@@ -45,7 +45,8 @@ func siteHandler(router fiber.Router) {
 
 func postHandler(router fiber.Router) {
 	postRepo := repo.NewPostRepository(core.GetDB())
-	postCommand := service.NewPostCommandService(postRepo)
+	siteRepo := repo.NewSiteRepository(core.GetDB())
+	postCommand := service.NewPostCommandService(postRepo, siteRepo)
 	postQuery := service.NewPostQueryService(postRepo)
 	posts := handler.NewPostHandler(postCommand, postQuery)
 	posts(router)
