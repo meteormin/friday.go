@@ -19,7 +19,7 @@ type Config struct {
 func (cfg Config) options() []gocron.SchedulerOption {
 	return []gocron.SchedulerOption{
 		gocron.WithLocation(cfg.Location),
-		gocron.WithLogger(logger.NewGocronLogger(cfg.LogLevel)),
+		gocron.WithLogger(logger.NewGoCronLogger(cfg.LogLevel)),
 		gocron.WithMonitor(cfg.Monitor),
 		gocron.WithMonitorStatus(cfg.MonitorStatus),
 	}

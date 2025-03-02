@@ -18,24 +18,26 @@ import (
 )
 import "github.com/gofiber/fiber/v2/middleware/cors"
 
-func NewCommon(router fiber.Router) {
-	router.Use(logger.New())
+func Commons(router fiber.Router) {
+	router.Use(logger.New(logger.Config{
+		TimeFormat: "2006/01/02 15:04:05",
+	}))
 	router.Use(requestid.New())
 	router.Use(cors.New())
 	router.Use(healthcheck.New())
 
-	if core.GetConfig().Env != config.Release {
+	if core.Config().Env != config.Release {
 		router.Use("/expose/envvars", envvar.New())
 
 		router.Use("/metrics", monitor.New(monitor.Config{
-			Title: core.GetConfig().App.Name + " v" + core.GetConfig().App.Version,
+			Title: core.Config().App.Name + " v" + core.Config().App.Version,
 		}))
 
 		router.Use("/routes", func(ctx *fiber.Ctx) error {
-			return ctx.JSON(http.Fiber().GetRoutes())
+			return ctx.JSON(http.App().GetRoutes())
 		})
 
-		router.Use("/configs", func(ctx *fiber.Ctx) error { return ctx.JSON(core.GetConfig()) })
+		router.Use("/configs", func(ctx *fiber.Ctx) error { return ctx.JSON(core.Config()) })
 
 		router.Use("/dev", func(ctx *fiber.Ctx) error {
 			protocol := ctx.Protocol()
@@ -66,6 +68,6 @@ func NewCommon(router fiber.Router) {
 
 func NewJwtGuard(router fiber.Router) {
 	router.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte(core.GetConfig().Server.Jwt.Secret),
+		SigningKey: []byte(core.Config().Server.Jwt.Secret),
 	}))
 }

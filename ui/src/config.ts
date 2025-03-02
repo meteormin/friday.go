@@ -1,6 +1,7 @@
 
 export const config = {
-    apiUrl: "http://localhost:8080"
+    appName: "Friday UI",
+    apiUrl: ""
 }
 
 export default config;

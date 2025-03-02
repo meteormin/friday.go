@@ -73,7 +73,7 @@ LDFLAGS=-ldflags "-linkmode external -extldflags -static"
 build: os ?= $(OS)
 build: arch ?= $(ARCH)
 build:
-	echo "Building $(mod) for $(os)-$(arch)"
+	echo "Building $(mod) for $(os)/$(arch)"
 ifeq ($(os), linux)
 	CC=$(cc) CGO_ENABLED=1 GOOS=$(os) GOARCH=$(arch) go build $(LDFLAGS) -o build/$(mod)-$(os)-$(arch) ./cmd/$(mod)/main.go
 else

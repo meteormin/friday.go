@@ -16,8 +16,10 @@ const (
 )
 
 type App struct {
-	Name    string `json:"name" yaml:"name"`
-	Version string `json:"version" yaml:"version"`
+	Name             string `json:"name" yaml:"name"`
+	Version          string `json:"version" yaml:"version"`
+	CaseSensitive    bool   `json:"caseSensitive" yaml:"caseSensitive"`
+	EnablePrintRouts bool   `json:"enablePrintRouts" yaml:"enablePrintRouts"`
 }
 
 type Path struct {
@@ -75,13 +77,14 @@ type Server struct {
 }
 
 type Config struct {
-	Env       Env                    `json:"env" yaml:"env"`
-	TZ        string                 `json:"tz" yaml:"timeZone"`
-	Path      Path                   `json:"path" yaml:"path"`
-	App       App                    `json:"app" yaml:"app"`
-	Server    Server                 `json:"server" yaml:"server"`
-	Database  database.Config        `json:"database" yaml:"database"`
-	Badger    database.BadgerConfig  `json:"badger" yaml:"badger"`
-	Logging   logger.ZapLoggerConfig `json:"logging" yaml:"logging"`
-	Scheduler scheduler.Config       `json:"scheduler" yaml:"scheduler"`
+	Env          Env                    `json:"env" yaml:"env"`
+	TZ           string                 `json:"tz" yaml:"timeZone"`
+	Path         Path                   `json:"path" yaml:"path"`
+	App          App                    `json:"app" yaml:"app"`
+	Server       Server                 `json:"server" yaml:"server"`
+	Database     database.Config        `json:"database" yaml:"database"`
+	Badger       database.BadgerConfig  `json:"badger" yaml:"badger"`
+	Logging      logger.ZapLoggerConfig `json:"logging" yaml:"logging"`
+	Scheduler    scheduler.Config       `json:"scheduler" yaml:"scheduler"`
+	InMemoryMode bool                   `json:"inMemoryMode" yaml:"inMemoryMode"`
 }

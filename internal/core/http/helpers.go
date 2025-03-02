@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/db/entity"
 	"time"
@@ -11,7 +11,7 @@ import (
 // GenerateToken JWT 토큰 생성 함수
 func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, error) {
 	var user entity.User
-	if err := core.GetDB().Where("username = ?", username).First(&user).Error; err != nil {
+	if err := core.DB().Where("username = ?", username).First(&user).Error; err != nil {
 		return "", err
 	}
 
@@ -25,7 +25,7 @@ func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, er
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(core.GetConfig().Server.Jwt.Secret))
+	return token.SignedString([]byte(core.Config().Server.Jwt.Secret))
 }
 
 func ExtractTokenClaims(ctx *fiber.Ctx) jwt.MapClaims {

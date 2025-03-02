@@ -1,13 +1,12 @@
 package logger
 
 import (
-	"os"
-	"path"
-	"time"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
+	"path"
+	"time"
 )
 
 // ZapLoggerConfig is custom logger configuration
@@ -122,17 +121,6 @@ func GetLogger(loggerName ...string) *zap.SugaredLogger {
 func NewZapLogger(config ...ZapLoggerConfig) *zap.SugaredLogger {
 	cfg := resolveZapLoggerConfig(config...)
 
-	logFilename := path.Join(cfg.FilePath, cfg.Filename)
-
-	ll := &lumberjack.Logger{
-		Filename:   logFilename,
-		MaxSize:    cfg.MaxSize,
-		MaxBackups: cfg.MaxBackups,
-		MaxAge:     cfg.MaxAge,
-		Compress:   cfg.Compress,
-	}
-
-	ws := zapcore.AddSync(ll)
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.TimeKey = cfg.TimeKey
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
@@ -164,12 +152,24 @@ func NewZapLogger(config ...ZapLoggerConfig) *zap.SugaredLogger {
 	}
 
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-	core := zapcore.NewTee(
-		zapcore.NewCore(encoder, ws, cfg.LogLevel),
-		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), cfg.LogLevel),
-	)
+	cores := make([]zapcore.Core, 0)
+	logFilename := path.Join(cfg.FilePath, cfg.Filename)
+	if logFilename != "" {
+		ll := &lumberjack.Logger{
+			Filename:   logFilename,
+			MaxSize:    cfg.MaxSize,
+			MaxBackups: cfg.MaxBackups,
+			MaxAge:     cfg.MaxAge,
+			Compress:   cfg.Compress,
+		}
+		ws := zapcore.AddSync(ll)
+		cores = append(cores, zapcore.NewCore(encoder, ws, cfg.LogLevel))
+	}
 
-	zapLogger := zap.New(core, zap.AddCaller())
+	cores = append(cores, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), cfg.LogLevel))
+
+	combineCore := zapcore.NewTee(cores...)
+	zapLogger := zap.New(combineCore, zap.AddCaller())
 	logger := zapLogger.Named(cfg.Name).Sugar()
 
 	if cfg.WithOptions != nil {

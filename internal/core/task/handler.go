@@ -8,7 +8,7 @@ import (
 )
 
 func Handler(router fiber.Router) {
-	jobRepo := NewJobRepository(core.GetDB())
+	jobRepo := NewJobRepository(core.DB())
 	jobs := func(router fiber.Router) {
 		router.Group("/tasks").
 			Get("/", func(ctx *fiber.Ctx) error {

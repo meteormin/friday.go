@@ -37,10 +37,7 @@ const docTemplate = `{
                     "200": {
                         "description": "회원 관리자 여부 조회 성공",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "boolean"
-                            }
+                            "$ref": "#/definitions/internal_adapter_rest_handler.HasAdminResource"
                         }
                     },
                     "500": {
@@ -132,7 +129,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "로그인 실험",
+                        "description": "로그인 실패",
                         "schema": {
                             "$ref": "#/definitions/github_com_meteormin_friday_go_internal_app.Error"
                         }
@@ -923,6 +920,14 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_meteormin_friday_go_internal_core_http.DateTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_adapter_rest_handler.CreatePostRequest": {
             "description": "생성 요청",
             "type": "object",
@@ -955,6 +960,15 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "internal_adapter_rest_handler.HasAdminResource": {
+            "description": "관리자 계정 존재 여부",
+            "type": "object",
+            "properties": {
+                "hasAdmin": {
+                    "type": "boolean"
                 }
             }
         },
@@ -1006,9 +1020,6 @@ const docTemplate = `{
             "description": "가입 요청",
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -1050,8 +1061,11 @@ const docTemplate = `{
             "description": "토큰 정보 리소스",
             "type": "object",
             "properties": {
-                "exp": {
-                    "type": "integer"
+                "expiresAt": {
+                    "$ref": "#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime"
+                },
+                "issuedAt": {
+                    "$ref": "#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime"
                 },
                 "token": {
                     "type": "string"
@@ -1102,7 +1116,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime"
                 },
                 "id": {
                     "type": "integer"
@@ -1111,7 +1125,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime"
                 },
                 "username": {
                     "type": "string"

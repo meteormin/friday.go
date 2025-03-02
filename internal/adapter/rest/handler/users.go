@@ -21,7 +21,6 @@ type SignInRequest struct {
 // SignupRequest
 // @Description 가입 요청
 type SignupRequest struct {
-	ID       uint   `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -47,8 +46,15 @@ type UserResource struct {
 // TokenResource
 // @Description 토큰 정보 리소스
 type TokenResource struct {
-	Token string `json:"token"`
-	Exp   int    `json:"exp"`
+	Token     string         `json:"token"`
+	ExpiresAt *http.DateTime `json:"expiresAt"`
+	IssuedAt  *http.DateTime `json:"issuedAt"`
+}
+
+// HasAdminResource
+// @Description 관리자 계정 존재 여부
+type HasAdminResource struct {
+	HasAdmin bool `json:"hasAdmin"`
 }
 
 type AuthHandler struct {
@@ -105,7 +111,7 @@ func (auth *AuthHandler) signUp(ctx *fiber.Ctx) error {
 // @Param req body SignInRequest true "회원 로그인 정보"
 // @Success 200 {object} TokenResource "회원 로그인 성공"
 // @Failure 400 {object} app.Error "잘못된 요청"
-// @Failure 401 {object} app.Error "로그인 실험"
+// @Failure 401 {object} app.Error "로그인 실패"
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/sign-in [post]
 // @Tags auth
@@ -125,7 +131,7 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, "Access Denied")
 	}
 
-	exp := core.GetConfig().Server.Jwt.Exp
+	exp := core.Config().Server.Jwt.Exp
 	token, err := http.GenerateToken(req.Username,
 		time.Second*time.Duration(exp), exists.IsAdmin)
 
@@ -134,8 +140,9 @@ func (auth *AuthHandler) signIn(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(TokenResource{
-		Token: token,
-		Exp:   exp,
+		Token:     token,
+		IssuedAt:  http.NewDateTime(time.Now()),
+		ExpiresAt: http.NewDateTime(time.Now().Add(time.Second * time.Duration(exp))),
 	})
 }
 
@@ -176,12 +183,14 @@ func (auth *AuthHandler) me(ctx *fiber.Ctx) error {
 // @ID has-admin
 // @Accept json
 // @Produce json
-// @Success 200 {object} map[string]bool "회원 관리자 여부 조회 성공"
+// @Success 200 {object} HasAdminResource "회원 관리자 여부 조회 성공"
 // @Failure 500 {object} app.Error "서버 오류"
 // @Router /api/auth/has-admin [get]
 // @Tags auth
 func (auth *AuthHandler) hasAdmin(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{"hasAdmin": auth.query.HasAdmin()})
+	return ctx.JSON(HasAdminResource{
+		HasAdmin: auth.query.HasAdmin(),
+	})
 }
 
 func NewAuthHandler(useCase port.UserCommandUseCase, query port.UserQueryUseCase) http.AddRouteFunc {

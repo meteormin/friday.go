@@ -1,19 +1,13 @@
 package bootstrap
 
 import (
-	"crypto/rand"
-	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/config"
 	"github.com/meteormin/friday.go/internal/core/db"
-	"github.com/meteormin/friday.go/internal/core/http"
 	"github.com/meteormin/friday.go/internal/core/task"
 	"github.com/meteormin/friday.go/pkg/database"
 	"github.com/meteormin/friday.go/pkg/logger"
 	"github.com/meteormin/friday.go/pkg/scheduler"
-	"os"
-	"path"
 	"time"
 )
 
@@ -22,7 +16,7 @@ const (
 	appVersion = "0.0.1"
 )
 
-func Initialize(cfgPath string) {
+func Initialize(cfgPath string) *config.Config {
 
 	cfg := config.LoadWithViper(cfgPath, config.App{
 		Name:    appName,
@@ -30,6 +24,10 @@ func Initialize(cfgPath string) {
 	})
 
 	core.SetConfig(cfg)
+
+	if cfg.Env == config.Test {
+		cfg.InMemoryMode = true
+	}
 
 	l := logger.NewZapLogger(cfg.Logging)
 	l.Info("Initializing application...")
@@ -39,15 +37,6 @@ func Initialize(cfgPath string) {
 	}
 
 	l.Info("Database connection established.")
-
-	if len(cfg.Badger.EncryptKey) == 0 {
-		l.Info("Generating Encryption Key...")
-		encKey, err := generateEncryptionKey(cfg.Path.Secret)
-		if err != nil {
-			l.Fatal(err)
-		}
-		cfg.Badger.EncryptKey = encKey
-	}
 
 	storage, err := database.NewBadger(cfg.Badger)
 	if err != nil {
@@ -65,7 +54,7 @@ func Initialize(cfgPath string) {
 
 	cfg.Scheduler.Location = loc
 
-	jobRepo := task.NewJobRepository(core.GetDB())
+	jobRepo := task.NewJobRepository(core.DB())
 	cfg.Scheduler.Monitor = jobRepo
 	cfg.Scheduler.MonitorStatus = jobRepo
 
@@ -74,41 +63,9 @@ func Initialize(cfgPath string) {
 		l.Fatal(err)
 	}
 
-	http.NewFiber(fiber.Config{
-		CaseSensitive:     true,
-		AppName:           appName + " v" + appVersion,
-		ErrorHandler:      http.NewErrorHandler(),
-		EnablePrintRoutes: cfg.Env != config.Release,
-	})
-}
-
-// generateEncryptionKey 32바이트(256비트)의 랜덤 암호화 키를 생성합니다.
-func generateEncryptionKey(secretPath string) ([]byte, error) {
-	secretFile := path.Join(secretPath, ".secret")
-	if _, err := os.Stat(secretFile); err == nil {
-		key, err := os.ReadFile(secretFile)
-		if err == nil {
-			core.GetLogger().Debug("Exists Encryption Key...")
-			return key, nil
-		}
+	if cfg.App.EnablePrintRouts {
+		cfg.App.EnablePrintRouts = cfg.Env != config.Release
 	}
 
-	key := make([]byte, 32) // AES-256에 필요한 32바이트 키
-	_, err := rand.Read(key)
-	if err != nil {
-		return nil, fmt.Errorf("failed generating encrypt ley: %w", err)
-	}
-
-	err = os.MkdirAll(secretPath, 0755)
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.WriteFile(secretFile, key, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	core.GetLogger().Debug("Generated Encryption Key")
-	return key, nil
+	return cfg
 }

@@ -3,9 +3,17 @@ import {Token, WithToken} from './common';
 import Auth, {AuthClient} from './auth';
 import User, {UsersClient} from "./users.ts";
 import UploadFile, {UploadFileClient} from "./upload-file.ts";
+import dayjs from "dayjs";
 
-const getToken = (): Token => {
-    return JSON.parse(localStorage.getItem('token') ?? "{}") as Token;
+const getToken = (): Token | null => {
+    const token = JSON.parse(localStorage.getItem('token') ?? "{}") as Token;
+    const exp = dayjs(token.expiresAt, 'YYYY-MM-DD HH:mm:ss');
+    const now = dayjs();
+    if (now.isBefore(exp)) {
+        return token;
+    }
+
+    return null;
 }
 
 const setToken = (token: Token) => {
@@ -13,9 +21,15 @@ const setToken = (token: Token) => {
 }
 
 const handleError = (error: AxiosError) => {
-    if (error.status === 401) {
+    if (error.status === undefined) {
+        alert(error.message);
+    } else if (error.status === 401) {
         alert("로그인이 필요합니다.");
         window.location.href = "/sign-in";
+    } else if (error.status >= 500) {
+        alert("서버에러가 발생했습니다.");
+    } else {
+        alert(error.message);
     }
 }
 
@@ -50,14 +64,14 @@ function ErrorProxy<T extends WithToken>(client: T): T {
 }
 
 export interface ApiClient {
-    getToken: () => Token,
+    getToken: () => Token | null,
     setToken: (token: Token) => void,
     auth: AuthClient
     users: UsersClient
     uploadFile: UploadFileClient
 }
 
-export function NewApiClient(apiUrl: string): ApiClient {
+export function newApiClient(apiUrl: string): ApiClient {
     const withToken = {getToken, setToken};
     return {
         ...withToken,

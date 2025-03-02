@@ -17,25 +17,25 @@ func SetConfig(cfg *config.Config) {
 	gCfg = cfg
 }
 
-func GetConfig() *config.Config {
+func Config() *config.Config {
 	return gCfg
 }
 
-func GetDB() *gorm.DB {
+func DB() *gorm.DB {
 	if gCfg != nil {
 		return database.GetDB(gCfg.Database.Name)
 	}
 	return database.GetDB()
 }
 
-func GetLogger() *zap.SugaredLogger {
+func Logger() *zap.SugaredLogger {
 	if gCfg != nil {
 		return logger.GetLogger(gCfg.Logging.Name)
 	}
 	return logger.GetLogger()
 }
 
-func GetScheduler() gocron.Scheduler {
+func Scheduler() gocron.Scheduler {
 	return scheduler.GetScheduler()
 }
 
@@ -45,6 +45,6 @@ func SetStorage(s *badger.DB) {
 	storage = s
 }
 
-func GetStorage() *badger.DB {
+func Storage() *badger.DB {
 	return storage
 }

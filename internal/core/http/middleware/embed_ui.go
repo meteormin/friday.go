@@ -39,7 +39,7 @@ func EmbedUI(router fiber.Router) {
 		}
 
 		ctx.Set("Content-Type", contentType)
-		core.GetLogger().Debugf("Serving file: %s, %s", path, contentType)
+		core.Logger().Debugf("Serving file: %s, %s", path, contentType)
 		return ctx.Send(data)
 	})
 }

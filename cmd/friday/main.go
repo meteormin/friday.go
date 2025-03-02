@@ -37,29 +37,27 @@ func main() {
 	flag.Parse()
 
 	// initialize app
-	bootstrap.Initialize(*cfgPath)
-
-	cfg := core.GetConfig()
-
-	l := core.GetLogger()
-
+	cfg := bootstrap.Initialize(*cfgPath)
 	if cfg.Server.Port <= 0 {
 		cfg.Server.Port = 8080
 	}
 
-	fiberApp := http.Fiber()
-	taskScheduler := core.GetScheduler()
+	app := http.NewApp(cfg.App)
 
 	// set swagger info
 	apiInfo(cfg.Server.Host, cfg.App.Version, strconv.Itoa(cfg.Server.Port))
 
 	// set routes
-	rest.RegisterRoutes()
+	rest.RegisterRoutes(app)
+
+	l := core.Logger()
+	taskScheduler := core.Scheduler()
+	storage := core.Storage()
 
 	// Listen from a different goroutine
 	go func() {
 		taskScheduler.Start()
-		if err := fiberApp.Listen(":" + strconv.Itoa(cfg.Server.Port)); err != nil {
+		if err := app.Listen(":" + strconv.Itoa(cfg.Server.Port)); err != nil {
 			l.Panic(err)
 		}
 	}()
@@ -69,7 +67,7 @@ func main() {
 
 	<-c // This blocks the main thread until an interrupt is received
 	fmt.Println("Gracefully shutting down...")
-	err := fiberApp.Shutdown()
+	err := app.Shutdown()
 	if err != nil {
 		l.Error("Graceful shutdown failed", err)
 	} else {
@@ -78,14 +76,14 @@ func main() {
 
 	fmt.Println("Running cleanup tasks...")
 
-	err = core.GetScheduler().Shutdown()
+	err = taskScheduler.Shutdown()
 	if err != nil {
 		l.Error("Scheduler shutdown failed", err)
 	} else {
 		l.Info("Scheduler was successful shutdown.")
 	}
 
-	err = core.GetStorage().Close()
+	err = storage.Close()
 	if err != nil {
 		l.Error("Storage shutdown failed", err)
 	} else {

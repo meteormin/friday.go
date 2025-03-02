@@ -28,3 +28,4 @@ path:
   data: ./data
   log: ./logs
   secret: ./data/secret
+inMemoryMode: true

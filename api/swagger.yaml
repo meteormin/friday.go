@@ -9,6 +9,11 @@ definitions:
       title:
         type: string
     type: object
+  github_com_meteormin_friday_go_internal_core_http.DateTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
   internal_adapter_rest_handler.CreatePostRequest:
     description: 생성 요청
     properties:
@@ -31,6 +36,12 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  internal_adapter_rest_handler.HasAdminResource:
+    description: 관리자 계정 존재 여부
+    properties:
+      hasAdmin:
+        type: boolean
     type: object
   internal_adapter_rest_handler.PostResource:
     properties:
@@ -64,8 +75,6 @@ definitions:
   internal_adapter_rest_handler.SignupRequest:
     description: 가입 요청
     properties:
-      id:
-        type: integer
       name:
         type: string
       password:
@@ -93,8 +102,10 @@ definitions:
   internal_adapter_rest_handler.TokenResource:
     description: 토큰 정보 리소스
     properties:
-      exp:
-        type: integer
+      expiresAt:
+        $ref: '#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime'
+      issuedAt:
+        $ref: '#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime'
       token:
         type: string
     type: object
@@ -127,13 +138,13 @@ definitions:
     description: 회원 정보 리소스
     properties:
       createdAt:
-        type: string
+        $ref: '#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime'
       id:
         type: integer
       name:
         type: string
       updatedAt:
-        type: string
+        $ref: '#/definitions/github_com_meteormin_friday_go_internal_core_http.DateTime'
       username:
         type: string
     type: object
@@ -159,9 +170,7 @@ paths:
         "200":
           description: 회원 관리자 여부 조회 성공
           schema:
-            additionalProperties:
-              type: boolean
-            type: object
+            $ref: '#/definitions/internal_adapter_rest_handler.HasAdminResource'
         "500":
           description: 서버 오류
           schema:
@@ -220,7 +229,7 @@ paths:
           schema:
             $ref: '#/definitions/github_com_meteormin_friday_go_internal_app.Error'
         "401":
-          description: 로그인 실험
+          description: 로그인 실패
           schema:
             $ref: '#/definitions/github_com_meteormin_friday_go_internal_app.Error'
         "500":

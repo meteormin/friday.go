@@ -34,10 +34,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "additionalProperties" : {
-                    "type" : "boolean"
-                  },
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/internal_adapter_rest_handler.HasAdminResource"
                 }
               }
             },
@@ -145,7 +142,7 @@
                 }
               }
             },
-            "description" : "로그인 실험"
+            "description" : "로그인 실패"
           },
           "500" : {
             "content" : {
@@ -1004,6 +1001,14 @@
         },
         "type" : "object"
       },
+      "github_com_meteormin_friday_go_internal_core_http.DateTime" : {
+        "properties" : {
+          "time.Time" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
       "internal_adapter_rest_handler.CreatePostRequest" : {
         "description" : "생성 요청",
         "properties" : {
@@ -1035,6 +1040,15 @@
           },
           "name" : {
             "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "internal_adapter_rest_handler.HasAdminResource" : {
+        "description" : "관리자 계정 존재 여부",
+        "properties" : {
+          "hasAdmin" : {
+            "type" : "boolean"
           }
         },
         "type" : "object"
@@ -1086,9 +1100,6 @@
       "internal_adapter_rest_handler.SignupRequest" : {
         "description" : "가입 요청",
         "properties" : {
-          "id" : {
-            "type" : "integer"
-          },
           "name" : {
             "type" : "string"
           },
@@ -1130,8 +1141,11 @@
       "internal_adapter_rest_handler.TokenResource" : {
         "description" : "토큰 정보 리소스",
         "properties" : {
-          "exp" : {
-            "type" : "integer"
+          "expiresAt" : {
+            "$ref" : "#/components/schemas/github_com_meteormin_friday_go_internal_core_http.DateTime"
+          },
+          "issuedAt" : {
+            "$ref" : "#/components/schemas/github_com_meteormin_friday_go_internal_core_http.DateTime"
           },
           "token" : {
             "type" : "string"
@@ -1182,7 +1196,7 @@
         "description" : "회원 정보 리소스",
         "properties" : {
           "createdAt" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_meteormin_friday_go_internal_core_http.DateTime"
           },
           "id" : {
             "type" : "integer"
@@ -1191,7 +1205,7 @@
             "type" : "string"
           },
           "updatedAt" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_meteormin_friday_go_internal_core_http.DateTime"
           },
           "username" : {
             "type" : "string"

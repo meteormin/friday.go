@@ -115,7 +115,7 @@ func (j *JobRepositoryImpl) IncrementJob(id uuid.UUID, name string, tags []strin
 			Tags:  NewJobTags(tags),
 		}
 	} else if err != nil {
-		core.GetLogger().Error(err)
+		core.Logger().Error(err)
 		return
 	}
 
@@ -126,7 +126,7 @@ func (j *JobRepositoryImpl) IncrementJob(id uuid.UUID, name string, tags []strin
 
 	_, err = j.Save(*job)
 	if err != nil {
-		core.GetLogger().Error(err)
+		core.Logger().Error(err)
 	}
 }
 
@@ -139,7 +139,7 @@ func (j *JobRepositoryImpl) RecordJobTiming(startAt, endAt time.Time, id uuid.UU
 			Tags:  NewJobTags(tags),
 		}
 	} else if err != nil {
-		core.GetLogger().Error(err)
+		core.Logger().Error(err)
 		return
 	}
 
@@ -151,7 +151,7 @@ func (j *JobRepositoryImpl) RecordJobTiming(startAt, endAt time.Time, id uuid.UU
 
 	_, err = j.Save(*job)
 	if err != nil {
-		core.GetLogger().Error(err)
+		core.Logger().Error(err)
 	}
 }
 
@@ -179,15 +179,15 @@ func (j *JobRepositoryImpl) RecordJobTimingWithStatus(startAt, endAt time.Time, 
 		Error:  errMsg,
 	})
 
-	core.GetLogger().Debugf("JobID: %s", job.JobID)
-	core.GetLogger().Debugf("Job: %s", job.Name)
-	core.GetLogger().Debugf("Status: %s", status)
-	core.GetLogger().Debugf("Start: %s, End: %s", startAt, endAt)
-	core.GetLogger().Debugf("Error: %s", err)
+	core.Logger().Debugf("JobID: %s", job.JobID)
+	core.Logger().Debugf("Job: %s", job.Name)
+	core.Logger().Debugf("Status: %s", status)
+	core.Logger().Debugf("Start: %s, End: %s", startAt, endAt)
+	core.Logger().Debugf("Error: %s", err)
 
 	_, err = j.Save(*job)
 	if err != nil {
-		core.GetLogger().Error(err)
+		core.Logger().Error(err)
 	}
 }
 

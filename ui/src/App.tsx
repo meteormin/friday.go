@@ -4,18 +4,25 @@ import * as React from "react";
 import SignIn from "./pages/sign-in/SignIn";
 import SignUp from "./pages/sign-up/SignUp";
 import Posts from "./pages/posts/Posts.tsx";
+import {ApiClient, newApiClient} from "./api";
+import config from "./config.ts";
+import {Token} from "./api/common.ts";
+import LayoutContainer from "./components/LayoutContainer.tsx";
 
-const nvItems = [
-    {name: "Posts", path: "/posts"}
-];
-
-function Guard({children}: { children: React.ReactNode }) {
-    const token = localStorage.getItem("token")
-    if (token != null || token != "") {
-        return <>{children}</>
+function Guard({getToken, children}: { getToken: () => Token | null, children: React.ReactNode }) {
+    const token = getToken();
+    if (token != null && token.token != null) {
+        return <LayoutContainer appName={config.appName}>
+            {children}
+        </LayoutContainer>
     } else {
         return <Navigate to="/sign-in" replace/>
     }
+}
+
+function Logout() {
+    localStorage.removeItem("token");
+    return <Navigate to="/sign-in" replace/>
 }
 
 interface RouteProps {
@@ -23,30 +30,40 @@ interface RouteProps {
     element: React.ReactNode
 }
 
-const routes: RouteProps[] = [
-    {
-        path: "/",
-        element: <Guard><Posts/></Guard>
-    },
-    {
-        path: "/posts",
-        element: <Guard><Posts/></Guard>
-    },
-    {
-        path: "/sign-in",
-        element: <SignIn/>
-    },
-    {
-        path: "/sign-up",
-        element: <SignUp/>
-    }
-]
+const routes = (): RouteProps[] => {
+    const apiClient: ApiClient = newApiClient(config.apiUrl);
+
+    return [
+        {
+            path: "/",
+            element: <Guard getToken={apiClient.getToken}><Posts/></Guard>
+        },
+        {
+            path: "/posts",
+            element: <Guard getToken={apiClient.getToken}><Posts/></Guard>
+        },
+        {
+            path: "/sign-in",
+            element: <SignIn apiClient={apiClient}/>
+        },
+        {
+            path: "/sign-up",
+            element: <SignUp apiClient={apiClient}/>
+        },
+        {
+            path: "/logout",
+            element: <Guard getToken={apiClient.getToken}>
+                <Logout/>
+            </Guard>
+        }
+    ];
+}
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {routes.map((route) => (
+                {routes().map((route) => (
                     <Route key={route.path} path={route.path} element={route.element}/>
                 ))}
             </Routes>
