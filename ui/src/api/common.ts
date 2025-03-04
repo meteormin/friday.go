@@ -7,6 +7,6 @@ export interface Token {
 }
 
 export interface WithToken {
-    getToken: () => Token | null,
+    getToken: () => Token,
     setToken: (token: Token) => void
 }

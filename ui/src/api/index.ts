@@ -3,17 +3,10 @@ import {Token, WithToken} from './common';
 import Auth, {AuthClient} from './auth';
 import User, {UsersClient} from "./users.ts";
 import UploadFile, {UploadFileClient} from "./upload-file.ts";
-import dayjs from "dayjs";
+import Posts, {PostsClient} from "./posts.ts";
 
-const getToken = (): Token | null => {
-    const token = JSON.parse(localStorage.getItem('token') ?? "{}") as Token;
-    const exp = dayjs(token.expiresAt, 'YYYY-MM-DD HH:mm:ss');
-    const now = dayjs();
-    if (now.isBefore(exp)) {
-        return token;
-    }
-
-    return null;
+const getToken = (): Token => {
+    return JSON.parse(localStorage.getItem('token') ?? "{}") as Token;
 }
 
 const setToken = (token: Token) => {
@@ -64,11 +57,12 @@ function ErrorProxy<T extends WithToken>(client: T): T {
 }
 
 export interface ApiClient {
-    getToken: () => Token | null,
+    getToken: () => Token,
     setToken: (token: Token) => void,
     auth: AuthClient
     users: UsersClient
     uploadFile: UploadFileClient
+    posts: PostsClient
 }
 
 export function newApiClient(apiUrl: string): ApiClient {
@@ -78,5 +72,6 @@ export function newApiClient(apiUrl: string): ApiClient {
         auth: ErrorProxy(Auth(apiUrl, withToken)),
         users: ErrorProxy(User(apiUrl, withToken)),
         uploadFile: ErrorProxy(UploadFile(apiUrl, withToken)),
+        posts: ErrorProxy(Posts(apiUrl, withToken)),
     }
 }

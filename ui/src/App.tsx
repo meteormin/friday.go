@@ -8,10 +8,13 @@ import {ApiClient, newApiClient} from "./api";
 import config from "./config.ts";
 import {Token} from "./api/common.ts";
 import LayoutContainer from "./components/LayoutContainer.tsx";
+import dayjs from "dayjs";
 
-function Guard({getToken, children}: { getToken: () => Token | null, children: React.ReactNode }) {
+function Guard({getToken, children}: { getToken: () => Token, children: React.ReactNode }) {
     const token = getToken();
-    if (token != null && token.token != null) {
+    const exp = dayjs(token.expiresAt, 'YYYY-MM-DD HH:mm:ss');
+    const now = dayjs();
+    if (now.isBefore(exp)) {
         return <LayoutContainer appName={config.appName}>
             {children}
         </LayoutContainer>
@@ -36,19 +39,19 @@ const routes = (): RouteProps[] => {
     return [
         {
             path: "/",
-            element: <Guard getToken={apiClient.getToken}><Posts/></Guard>
+            element: <Guard getToken={apiClient.getToken}><Posts postsClient={apiClient.posts}/></Guard>
         },
         {
             path: "/posts",
-            element: <Guard getToken={apiClient.getToken}><Posts/></Guard>
+            element: <Guard getToken={apiClient.getToken}><Posts postsClient={apiClient.posts}/></Guard>
         },
         {
             path: "/sign-in",
-            element: <SignIn apiClient={apiClient}/>
+            element: <SignIn authClient={apiClient.auth}/>
         },
         {
             path: "/sign-up",
-            element: <SignUp apiClient={apiClient}/>
+            element: <SignUp authClient={apiClient.auth}/>
         },
         {
             path: "/logout",
