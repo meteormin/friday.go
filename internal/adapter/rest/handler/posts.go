@@ -78,8 +78,13 @@ type PostHandler struct {
 // @Tags posts
 // @Security BearerAuth
 func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
-	posts, err := h.query.RetrievePosts(userId, ctx.Query("query"))
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	posts, err := h.query.RetrievePosts(uint(userID), ctx.Query("query"))
 	if err != nil {
 		return err
 	}
@@ -106,14 +111,18 @@ func (h PostHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Tags posts
 // @Security BearerAuth
 func (h PostHandler) Find(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.query.FindPost(userId, uint(id))
+	post, err := h.query.FindPost(uint(userID), uint(id))
 	if err != nil {
 		return err
 	}
@@ -136,15 +145,19 @@ func (h PostHandler) Find(ctx *fiber.Ctx) error {
 // @Tags posts
 // @Security BearerAuth
 func (h PostHandler) Create(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
-
-	var req CreatePostRequest
-	err := ctx.BodyParser(&req)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.command.CreatePost(userId, port.CreatePost{
+	var req CreatePostRequest
+	err = ctx.BodyParser(&req)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	post, err := h.command.CreatePost(uint(userID), port.CreatePost{
 		SiteID:  req.SiteID,
 		FileID:  req.FileID,
 		Title:   req.Title,
@@ -174,7 +187,11 @@ func (h PostHandler) Create(ctx *fiber.Ctx) error {
 // @Tags posts
 // @Security BearerAuth
 func (h PostHandler) Update(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
@@ -187,7 +204,7 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	post, err := h.command.UpdatePost(userId, uint(id), port.UpdatePost{
+	post, err := h.command.UpdatePost(uint(userID), uint(id), port.UpdatePost{
 		FileID:  update.FileID,
 		Title:   update.Title,
 		Content: update.Content,
@@ -214,14 +231,18 @@ func (h PostHandler) Update(ctx *fiber.Ctx) error {
 // @Tags posts
 // @Security BearerAuth
 func (h PostHandler) Delete(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	err = h.command.DeletePost(userId, uint(id))
+	err = h.command.DeletePost(uint(userID), uint(id))
 	if err != nil {
 		return err
 	}

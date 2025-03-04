@@ -4,6 +4,7 @@ import Auth, {AuthClient} from './auth';
 import User, {UsersClient} from "./users.ts";
 import UploadFile, {UploadFileClient} from "./upload-file.ts";
 import Posts, {PostsClient} from "./posts.ts";
+import {SiteClient, Sites} from "./sites.ts";
 
 const getToken = (): Token => {
     return JSON.parse(localStorage.getItem('token') ?? "{}") as Token;
@@ -62,6 +63,7 @@ export interface ApiClient {
     auth: AuthClient
     users: UsersClient
     uploadFile: UploadFileClient
+    sites: SiteClient
     posts: PostsClient
 }
 
@@ -72,6 +74,7 @@ export function newApiClient(apiUrl: string): ApiClient {
         auth: ErrorProxy(Auth(apiUrl, withToken)),
         users: ErrorProxy(User(apiUrl, withToken)),
         uploadFile: ErrorProxy(UploadFile(apiUrl, withToken)),
+        sites: ErrorProxy(Sites(apiUrl, withToken)),
         posts: ErrorProxy(Posts(apiUrl, withToken)),
     }
 }

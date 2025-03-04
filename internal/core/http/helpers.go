@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/meteormin/friday.go/internal/core"
 	"github.com/meteormin/friday.go/internal/core/db/entity"
+	"strconv"
 	"time"
 )
 
@@ -16,7 +17,7 @@ func GenerateToken(username string, exp time.Duration, isAdmin bool) (string, er
 	}
 
 	claims := jwt.MapClaims{
-		"id":       user.ID,
+		"id":       strconv.Itoa(int(user.ID)),
 		"username": username,
 		"iat":      time.Now().Unix(),
 		"exp":      time.Now().Add(exp).Unix(), // 24시간 유효

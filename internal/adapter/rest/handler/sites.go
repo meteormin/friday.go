@@ -68,9 +68,13 @@ type SiteHandler struct {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
-	sites, err := handler.query.RetrieveSite(userId, ctx.Query("query"))
+	sites, err := handler.query.RetrieveSite(uint(userID), ctx.Query("query"))
 	if err != nil {
 		return err
 	}
@@ -97,14 +101,18 @@ func (handler *SiteHandler) Retrieve(ctx *fiber.Ctx) error {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.query.FindSite(userId, uint(id))
+	site, err := handler.query.FindSite(uint(userID), uint(id))
 	if err != nil {
 		return err
 	}
@@ -126,14 +134,18 @@ func (handler *SiteHandler) Find(ctx *fiber.Ctx) error {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.query.FindSite(userId, uint(id))
+	site, err := handler.query.FindSite(uint(userID), uint(id))
 	if err != nil {
 		return err
 	}
@@ -156,10 +168,14 @@ func (handler *SiteHandler) RetrievePosts(ctx *fiber.Ctx) error {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	var req CreateSiteRequest
-	err := ctx.BodyParser(&req)
+	err = ctx.BodyParser(&req)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
@@ -167,7 +183,7 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 	site, err := handler.useCase.CreateSite(port.CreateSite{
 		Host:   req.Host,
 		Name:   req.Name,
-		UserID: userId,
+		UserID: uint(userID),
 	})
 
 	if err != nil {
@@ -195,7 +211,11 @@ func (handler *SiteHandler) Create(ctx *fiber.Ctx) error {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
@@ -208,7 +228,7 @@ func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	site, err := handler.useCase.UpdateSite(userId, uint(id), port.UpdateSite{
+	site, err := handler.useCase.UpdateSite(uint(userID), uint(id), port.UpdateSite{
 		Name: req.Name,
 	})
 
@@ -234,14 +254,18 @@ func (handler *SiteHandler) Update(ctx *fiber.Ctx) error {
 // @Tags sites
 // @Security BearerAuth
 func (handler *SiteHandler) Delete(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	return handler.useCase.DeleteSite(userId, uint(id))
+	return handler.useCase.DeleteSite(uint(userID), uint(id))
 }
 
 func NewSiteHandler(useCase port.SiteCommandUseCase, query port.SiteQueryUseCase) http.AddRouteFunc {

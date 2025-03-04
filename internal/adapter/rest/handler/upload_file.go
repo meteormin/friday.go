@@ -34,7 +34,11 @@ type UploadFileHandler struct {
 // @Tags upload-file
 // @Security BearerAuth
 func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	uploadFile, err := ctx.FormFile("file")
 	if err != nil {
@@ -59,7 +63,7 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	file, err := handler.useCase.UploadFile(userId, port.UploadFile{
+	file, err := handler.useCase.UploadFile(uint(userID), port.UploadFile{
 		FileName: uploadFile.Filename,
 		Size:     uint(uploadFile.Size),
 		Data:     fBytes,
@@ -89,14 +93,18 @@ func (handler *UploadFileHandler) uploadFile(ctx *fiber.Ctx) error {
 // @Tags upload-file
 // @Security BearerAuth
 func (handler *UploadFileHandler) downloadFile(ctx *fiber.Ctx) error {
-	userId := http.ExtractTokenClaims(ctx)["id"].(uint)
+	userId := http.ExtractTokenClaims(ctx)["id"].(string)
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	file, domainModel, err := handler.useCase.DownloadFIle(userId, uint(id))
+	file, domainModel, err := handler.useCase.DownloadFIle(uint(userID), uint(id))
 	if err != nil {
 		return err
 	}

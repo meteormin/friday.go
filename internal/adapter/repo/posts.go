@@ -123,7 +123,7 @@ func (p *PostRepositoryImpl) RetrievePosts(userId uint, query string) ([]domain.
 	tx := p.db.Preload("Site", "user_id = ?", userId).
 		Preload("File").
 		Preload("Tags").
-		Where("title LIKE ?", "%"+query+"% OR content LIKE ?", "%"+query+"%").
+		Where("title LIKE ? OR content LIKE ?", "%"+query+"%", "%"+query+"%").
 		Find(&posts)
 
 	if err := tx.Error; err != nil {

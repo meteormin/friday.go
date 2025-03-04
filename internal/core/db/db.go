@@ -11,7 +11,14 @@ func New(cfg database.Config) error {
 
 	logger.GetLogger().Debug("Migrating database...")
 
-	err := database.Migrate(db, &entity.User{})
+	err := database.Migrate(db,
+		&entity.User{},
+		&entity.File{},
+		&entity.Site{},
+		&entity.Post{},
+		&entity.Tag{},
+	)
+
 	if err != nil {
 		return err
 	}
